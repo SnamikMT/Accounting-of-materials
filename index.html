@@ -13,35 +13,35 @@
     <button id="tools">Склад инструментов</button>
     <div id="toolCategories" style="display:none;">
       <h2>Типы инструментов</h2>
-      <ul>
-        <li><button id="rezcyButton">Резцы</button></li>
-        <li><button id="plastinyButton">Пластины</button></li>
-      </ul>
+      <table>
+        <tr>
+          <td id="otreznoy">Отрезной</td>
+          <td id="prohodnoy">Проходной</td>
+          <td id="rastocnoy">Расточной</td>
+        </tr>
+        <tr>
+          <td id="kanavochny">Канавочный</td>
+          <td id="rezbovoy">Резьбовой</td>
+        </tr>
+      </table>
     </div>
     
-    <div id="rezcySubcategories" style="display:none;">
-      <h2>Резцы</h2>
-      <ul>
-        <li>Отрезной</li>
-        <li>Проходной</li>
-        <li>Расточной</li>
-        <li>Канавочный</li>
-        <li>Резьбовой</li>
-      </ul>
+    <div id="toolDetails" style="display:none;">
+      <h2 id="toolTitle">Информация об инструменте</h2>
+      <div id="otreznoyDetails" style="display:none;">
+        <p id="otreznoyCharacteristics"></p>
+        <p id="otreznoyQuantity"></p>
+      </div>
+      <div id="prohodnoyDetails" style="display:none;">
+        <p id="prohodnoyCharacteristics"></p>
+        <p id="prohodnoyQuantity"></p>
+      </div>
+      <!-- Добавьте другие детали для других типов инструментов аналогично -->
     </div>
-    
-    <div id="plastinySubcategories" style="display:none;">
-      <h2>Пластины</h2>
-      <ul>
-        <li>Отрезные</li>
-        <li>Проходные</li>
-        <li>Расточные</li>
-        <li>Резьбовые</li>
-      </ul>
-    </div>
-
+  
     <button id="requests">Заявки</button>
   </div>
+  
   <script src="renderer.js"></script>
 </body>
 </html>
