@@ -1,29 +1,42 @@
-const electron = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const url = require('url');
-const { app, BrowserWindow } = electron;
-const reload = require('electron-reload');
-
-reload(__dirname);
+const WebSocket = require('ws');
 
 let mainWindow;
+let ws;
 
-app.on('ready', function() {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+  mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
+  mainWindow.webContents.openDevTools();
 
-  mainWindow.on('closed', function() {
-    mainWindow = null;
+  const server = require('./server/server');
+  ws = new WebSocket('ws://localhost:3000'); // Правильный порт здесь
+  ws.on('message', (message) => {
+    const data = JSON.parse(message);
+    mainWindow.webContents.send(data.type, data.payload);
   });
+
+  ipcMain.on('updateToolInfo', (event, payload) => {
+    ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
+  });
+}
+
+app.on('ready', createWindow);
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });

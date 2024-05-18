@@ -1,0 +1,63 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #202836;
+  color: #00EEFF;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  display: block;
+  width: 200px;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: #00EEFF;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #202836;
+}
+
+button:hover {
+  background-color: #00c4cc;
+}
+
+#toolCategories, #toolDetails, #addToolForm {
+  margin-top: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #00EEFF;
+}
+
+ul li:hover {
+  background-color: #00c4cc;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label, form input, form button {
+  margin: 5px 0;
+}
+
+form button {
+  align-self: flex-start;
+}

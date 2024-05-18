@@ -1,0 +1,18 @@
+{
+  "tokarny": [
+    { "name": "Отрезной", "characteristics": [ 
+      { "type": "характеристика 1", "quantity": 10 },
+      { "type": "характеристика 2", "quantity": 5 } ] },
+    { "name": "Проходной", "characteristics": [ 
+      { "type": "характеристика 2", "quantity": 5 } ] }
+  ],
+  "frezerny": [
+    { "name": "Фреза 1", "characteristics": [ 
+      { "type": "характеристика 1", "quantity": 20 } ] }
+  ],
+  "slesarny": [],
+  "sverlilny": [],
+  "masla": [],
+  "sozhi": [],
+  "hozInst": []
+}

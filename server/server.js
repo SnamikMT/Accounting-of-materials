@@ -1,48 +1,45 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const fs = require('fs');
+const path = require('path');
 const app = express();
-const PORT = 3000;
+const port = 3000;  // Используйте другой порт
 
-// Пример данных о инструментах в виде JSON
-let toolsData = {
-  "tokarny": [
-    { "id": 1, "название": "Отрезной", "количество": 10 },
-    { "id": 2, "название": "Проходной", "количество": 5 }
-  ],
-  "frezerny": [
-    { "id": 3, "название": "Фрезер", "количество": 8 }
-  ],
-  // Добавьте другие категории инструментов сюда
-};
+const toolsPath = path.join(__dirname, 'tools.json');
+let tools = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
 
 app.use(bodyParser.json());
 
-// Получить список инструментов в выбранной категории
-app.get('/api/tools/:category', (req, res) => {
-  const category = req.params.category;
-  const tools = toolsData[category] || [];
-  res.json(tools);
+app.get('/api/tools/:subcategory', (req, res) => {
+  const subcategory = req.params.subcategory;
+  res.json(tools[subcategory] || []);
 });
 
-// Добавить новый инструмент в выбранную категорию
-app.post('/api/tools/:category', (req, res) => {
-  const category = req.params.category;
-  const newTool = req.body;
-
-  // Генерируем уникальный ID для нового инструмента
-  newTool.id = Date.now();
-
-  // Добавляем новый инструмент в соответствующую категорию
-  if (!toolsData[category]) {
-    toolsData[category] = [];
-  }
-  toolsData[category].push(newTool);
-
-  res.json({ message: 'Инструмент добавлен' });
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
 
-// Старт сервера
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    const data = JSON.parse(message);
+    console.log('received:', data);
+
+    if (data.type === 'updateToolInfo') {
+      tools[data.payload.subcategory] = data.payload.tools;
+      fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
+    }
+
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(data));
+      }
+    });
+  });
+
+  ws.send(JSON.stringify({ type: 'initial', payload: tools }));
 });
+
+console.log('WebSocket server is running on ws://localhost:3000');

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:3000;">
+
+
+  <title>Inventory Management</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Inventory Management</h1>
+    <button id="materials">Materials</button>
+    <button id="tools">Tools</button>
+    <button id="requests">Requests</button>
+
+    <div id="toolCategories" style="display:none;">
+      <h2>Tool Categories</h2>
+      <ul>
+        <li id="tokarny" class="clickable">Токарный</li>
+        <li id="frezerny" class="clickable">Фрезерный</li>
+        <li id="slesarny" class="clickable">Слесарный</li>
+        <li id="sverlilny" class="clickable">Сверлильный</li>
+        <li id="masla" class="clickable">Масла</li>
+        <li id="sozhi" class="clickable">СОЖи</li>
+        <li id="hozInst" class="clickable">Хоз.Инстр</li>
+      </ul>
+    </div>
+
+    <div id="toolDetails" style="display:none;">
+      <h2 id="toolTitle">Tool Details</h2>
+      <ul id="toolList"></ul>
+      <ul id="characteristicsList"></ul> <!-- Добавленный элемент -->
+    </div>
+    
+
+    <div id="addToolForm" style="display:none;">
+      <h2>Add Tool Characteristics</h2>
+      <form>
+        <label for="typeInput">Type:</label>
+        <input type="text" id="typeInput" required>
+        <label for="quantityInput">Quantity:</label>
+        <input type="number" id="quantityInput" required>
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="./js/renderer.js"></script>
+</body>
+</html>
