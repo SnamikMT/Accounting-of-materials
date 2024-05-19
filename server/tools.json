@@ -1,18 +1,293 @@
 {
-  "tokarny": [
-    { "name": "Отрезной", "characteristics": [ 
-      { "type": "характеристика 1", "quantity": 10 },
-      { "type": "характеристика 2", "quantity": 5 } ] },
-    { "name": "Проходной", "characteristics": [ 
-      { "type": "характеристика 2", "quantity": 5 } ] }
-  ],
-  "frezerny": [
-    { "name": "Фреза 1", "characteristics": [ 
-      { "type": "характеристика 1", "quantity": 20 } ] }
-  ],
-  "slesarny": [],
-  "sverlilny": [],
-  "masla": [],
-  "sozhi": [],
-  "hozInst": []
+  "tokarny": {
+    "rezcy": {
+      "sizes": {
+        "25x25": {
+          "tools": {
+            "Проходной": {
+              "shapes": {
+                "Ромбические": {
+                  "angles": {
+                    "80°": [
+                      {
+                        "name": "Tool A",
+                        "quantity": 20
+                      },
+                      {
+                        "name": "Tool B",
+                        "quantity": 5
+                      },
+                      {
+                        "name": "RKT",
+                        "quantity": 4
+                      },
+                      {
+                        "name": "RETS",
+                        "quantity": 60
+                      },
+                      {
+                        "name": "BROOO",
+                        "quantity": 12
+                      },
+                      {
+                        "name": "GRTGF",
+                        "quantity": 20
+                      }
+                    ],
+                    "55°": [
+                      {
+                        "name": "Tool C",
+                        "quantity": 8
+                      },
+                      {
+                        "name": "Tool D",
+                        "quantity": 3
+                      }
+                    ],
+                    "35°": [
+                      {
+                        "name": "Tool E",
+                        "quantity": 6
+                      },
+                      {
+                        "name": "Tool F",
+                        "quantity": 4
+                      }
+                    ]
+                  }
+                },
+                "Круглые": [
+                  {
+                    "name": "Tool G",
+                    "quantity": 12
+                  },
+                  {
+                    "name": "Tool H",
+                    "quantity": 7
+                  }
+                ],
+                "Квадратные": [
+                  {
+                    "name": "Tool I",
+                    "quantity": 9
+                  },
+                  {
+                    "name": "Tool J",
+                    "quantity": 2
+                  }
+                ],
+                "Треугольные": [
+                  {
+                    "name": "Tool K",
+                    "quantity": 11
+                  },
+                  {
+                    "name": "Tool L",
+                    "quantity": 1
+                  }
+                ]
+              }
+            },
+            "Отрезной": {
+              "shapes": {
+                "Ромбические": {
+                  "angles": {
+                    "80°": [
+                      {
+                        "name": "Tool M",
+                        "quantity": 14
+                      },
+                      {
+                        "name": "Tool N",
+                        "quantity": 6
+                      }
+                    ],
+                    "55°": [
+                      {
+                        "name": "Tool O",
+                        "quantity": 8
+                      },
+                      {
+                        "name": "Tool P",
+                        "quantity": 4
+                      }
+                    ],
+                    "35°": [
+                      {
+                        "name": "Tool Q",
+                        "quantity": 5
+                      },
+                      {
+                        "name": "Tool R",
+                        "quantity": 3
+                      }
+                    ]
+                  }
+                },
+                "Круглые": [
+                  {
+                    "name": "Tool S",
+                    "quantity": 13
+                  },
+                  {
+                    "name": "Tool T",
+                    "quantity": 6
+                  }
+                ],
+                "Квадратные": [
+                  {
+                    "name": "Tool U",
+                    "quantity": 7
+                  },
+                  {
+                    "name": "Tool V",
+                    "quantity": 5
+                  }
+                ],
+                "Треугольные": [
+                  {
+                    "name": "Tool W",
+                    "quantity": 9
+                  },
+                  {
+                    "name": "Tool X",
+                    "quantity": 3
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "16x16": {
+          "tools": {}
+        },
+        "12x12": {
+          "tools": {}
+        }
+      }
+    },
+    "plastiny": {
+      "Проходной": {
+        "shapes": {
+          "Круглый": [
+            {
+              "name": "Tool a",
+              "quantity": 13
+            }
+          ],
+          "Ромбический": [
+            {
+              "name": "Tool b",
+              "quantity": 13
+            },
+            {
+              "name": "Tool c",
+              "quantity": 13
+            }
+          ],
+          "Квадратный": [
+            {
+              "name": "Tool d",
+              "quantity": 13
+            },
+            {
+              "name": "Tool e",
+              "quantity": 13
+            }
+          ],
+          "Треугольный": []
+        }
+      },
+      "Отрезной": {
+        "shapes": {
+          "Круглый": [
+            {
+              "name": "Tool f",
+              "quantity": 13
+            }
+          ],
+          "Ромбический": [
+            {
+              "name": "Tool g",
+              "quantity": 13
+            }
+          ],
+          "Квадратный": [
+            {
+              "name": "Tool h",
+              "quantity": 13
+            }
+          ],
+          "Треугольный": [
+            {
+              "name": "Tool k",
+              "quantity": 13
+            }
+          ]
+        }
+      },
+      "Расточной": {
+        "shapes": {
+          "Круглый": [
+            {
+              "name": "Tool i",
+              "quantity": 13
+            }
+          ],
+          "Ромбический": [
+            {
+              "name": "Tool o",
+              "quantity": 13
+            }
+          ],
+          "Квадратный": [
+            {
+              "name": "Tool l",
+              "quantity": 13
+            }
+          ],
+          "Треугольный": [
+            {
+              "name": "Tool t",
+              "quantity": 13
+            }
+          ]
+        }
+      },
+      "Резьбовой": {
+        "shapes": {
+          "Круглый": [
+            {
+              "name": "Tool r",
+              "quantity": 13
+            }
+          ],
+          "Ромбический": [
+            {
+              "name": "Tool g",
+              "quantity": 13
+            }
+          ],
+          "Квадратный": [
+            {
+              "name": "Tool q",
+              "quantity": 13
+            }
+          ],
+          "Треугольный": [
+            {
+              "name": "Tool w",
+              "quantity": 13
+            }
+          ]
+        }
+      }
+    }    
+  },
+  "frezerny": {},
+  "slesarny": {},
+  "sverlilny": {},
+  "masla": {},
+  "sozhi": {},
+  "hozInst": {}
 }

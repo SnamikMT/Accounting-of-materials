@@ -1,24 +1,37 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const WebSocket = require('ws');
 
 let mainWindow;
-let ws;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+      sandbox: true,
     }
   });
 
   mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
   mainWindow.webContents.openDevTools();
 
+  // Установка заголовка CSP
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ["default-src 'self'; connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"]
+      }
+    });
+  });
+
   const server = require('./server/server');
-  ws = new WebSocket('ws://localhost:3000'); // Правильный порт здесь
+
+  const ws = new WebSocket('ws://localhost:3000');
   ws.on('message', (message) => {
     const data = JSON.parse(message);
     mainWindow.webContents.send(data.type, data.payload);
