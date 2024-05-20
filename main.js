@@ -16,7 +16,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'client', 'login.html'));
   mainWindow.webContents.openDevTools();
 
   // Установка заголовка CSP
@@ -39,6 +39,21 @@ function createWindow() {
 
   ipcMain.on('updateToolInfo', (event, payload) => {
     ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
+  });
+
+  // Добавим обработку входа
+  ipcMain.on('login', (event, { username, password }) => {
+    if (username === 'admin' && password === 'admin') {
+      // Вход для администратора
+      mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
+    } else if (username === 'user' && password === 'user') {
+      // Вход для пользователя
+      mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
+    } else {
+      // Неверные учетные данные
+      // Загрузить страницу ошибки или отобразить сообщение об ошибке
+      console.log('Invalid username or password');
+    }
   });
 }
 

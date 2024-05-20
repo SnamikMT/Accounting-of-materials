@@ -14,6 +14,7 @@ let tools = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(helmet());
+app.use(express.static(path.join(__dirname, 'client')));
 
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', "connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
@@ -117,6 +118,48 @@ app.post('/api/tools/addPlastina', (req, res) => {
 
   // Отправляем ответ об успешном добавлении данных
   res.json({ success: true });
+});
+
+// Добавляем эндпоинт для отправки данных пользователей
+app.get('/api/users', (req, res) => {
+  // Путь к файлу с пользователями
+  const usersFilePath = path.join(__dirname, 'users.json');
+  
+  // Отправляем файл с пользователями
+  res.sendFile(usersFilePath);
+});
+
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Путь к файлу с пользователями
+  const usersFilePath = path.join(__dirname, 'users.json');
+
+  // Читаем файл с пользователями
+  fs.readFile(usersFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading users file:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    try {
+      // Преобразуем содержимое файла в объект
+      const users = JSON.parse(data);
+
+      // Проверяем, существует ли пользователь с указанным именем
+      if (users[username] && users[username].password === password) {
+        // Учетные данные верны, возвращаем успешный статус и роль пользователя
+        res.json({ success: true, role: users[username].role });
+      } else {
+        // Учетные данные неверны, возвращаем ошибку
+        res.status(401).json({ error: 'Invalid username or password' });
+      }
+    } catch (error) {
+      console.error('Error parsing users file:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 });
 
 
