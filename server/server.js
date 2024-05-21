@@ -131,11 +131,8 @@ app.get('/api/users', (req, res) => {
 
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-
-  // Путь к файлу с пользователями
   const usersFilePath = path.join(__dirname, 'users.json');
 
-  // Читаем файл с пользователями
   fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading users file:', err);
@@ -144,15 +141,10 @@ app.post('/api/login', (req, res) => {
     }
 
     try {
-      // Преобразуем содержимое файла в объект
       const users = JSON.parse(data);
-
-      // Проверяем, существует ли пользователь с указанным именем
       if (users[username] && users[username].password === password) {
-        // Учетные данные верны, возвращаем успешный статус и роль пользователя
         res.json({ success: true, role: users[username].role });
       } else {
-        // Учетные данные неверны, возвращаем ошибку
         res.status(401).json({ error: 'Invalid username or password' });
       }
     } catch (error) {

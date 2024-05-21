@@ -27,7 +27,7 @@
                       },
                       {
                         "name": "BROOO",
-                        "quantity": 12
+                        "quantity": 16
                       },
                       {
                         "name": "GRTGF",
@@ -282,7 +282,7 @@
           ]
         }
       }
-    }    
+    }
   },
   "frezerny": {},
   "slesarny": {},

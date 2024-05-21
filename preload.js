@@ -6,5 +6,8 @@ contextBridge.exposeInMainWorld('api', {
   },
   receive: (channel, func) => {
     ipcRenderer.on(channel, (event, ...args) => func(...args));
+  },
+  onUserRole: (callback) => {
+    ipcRenderer.on('userRole', (event, role) => callback(role));
   }
 });
