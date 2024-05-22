@@ -1,5 +1,3 @@
-// renderer.js
-
 import { setupWebSocket, setupEventListeners } from './tokarny.js';
 
 document.addEventListener('DOMContentLoaded', function () {

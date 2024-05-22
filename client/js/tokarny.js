@@ -10,7 +10,6 @@ let userRole = ''; // Роль пользователя
 function setupWebSocket(ws) {
     ws.onopen = function () {
         console.log('Connected to WebSocket server');
-        // Отправляем запрос для получения информации о пользователе
         ws.send(JSON.stringify({ type: 'getUserInfo' }));
     };
 
@@ -22,7 +21,8 @@ function setupWebSocket(ws) {
             toolsData[data.payload.subcategory] = data.payload.tools;
         } else if (data.type === 'userInfo') {
             userRole = data.payload.role;
-            console.log(`User role: ${userRole}`);
+            console.log(`User role received in setupWebSocket: ${userRole}`);
+            showAvailability();
         }
     };
 }
@@ -204,6 +204,8 @@ function showToolShapes() {
 
 // Отображение таблицы доступности инструментов
 function showAvailability() {
+    console.log('Calling showAvailability');
+    console.log(`Current user role in showAvailability: ${userRole}`);
     availability.style.display = 'block';
     availabilityTable.innerHTML = '';
 
@@ -220,19 +222,20 @@ function showAvailability() {
             availabilityTable.appendChild(row);
         });
 
-        // Проверяем, существует ли уже кнопка "Создать новый"
-        if (!document.getElementById('addButton') && userRole === 'Admin') {
+        // Проверяем, существует ли уже кнопка "Создать новый" и является ли пользователь администратором
+        const addButton = document.getElementById('addButton');
+        if (!addButton && userRole === 'Admin') {
             // Создаем кнопку "Создать новый"
-            const addButton = document.createElement('button');
-            addButton.id = 'addButton';
-            addButton.textContent = 'Создать новый';
-            addButton.addEventListener('click', function () {
+            const newAddButton = document.createElement('button');
+            newAddButton.id = 'addButton';
+            newAddButton.textContent = 'Создать новый';
+            newAddButton.addEventListener('click', function () {
                 // Показываем форму для добавления нового инструмента
                 addToolForm.style.display = 'block';
             });
 
             // Добавляем кнопку в DOM
-            availability.appendChild(addButton);
+            availability.appendChild(newAddButton);
         }
     } else {
         console.error(`Tools not found for ${selectedShape} at ${selectedAngle}`);
@@ -241,79 +244,21 @@ function showAvailability() {
 
 // Отображение подкатегорий для пластин
 function displayPlastinySubcategories() {
-    plastinySubcategories.innerHTML = '';
     const plastinyData = toolsData['plastiny'];
     for (const subcategory in plastinyData) {
-        const button = document.createElement('button');
-        button.id = subcategory;
-        button.textContent = subcategory;
-        button.addEventListener('click', function () {
+        const li = document.createElement('li');
+        li.textContent = subcategory;
+        li.addEventListener('click', function () {
             selectedSubcategory = subcategory;
-            shapeSelection.style.display = 'block';
-            displayShapes();
-        });
-        plastinySubcategories.appendChild(button);
-    }
-}
-
-// Отображение форм для выбора формы (shape) для пластин
-function displayShapes() {
-    shapeSelection.innerHTML = '';
-    const shapes = toolsData['plastiny'][selectedSubcategory]?.shapes;
-    if (!shapes) {
-        console.error(`Shapes not found for subcategory ${selectedSubcategory}`);
-        return;
-    }
-    for (const shape in shapes) {
-        const button = document.createElement('button');
-        button.className = 'shape-option';
-        button.setAttribute('data-shape', shape);
-        button.textContent = shape;
-        button.addEventListener('click', function () {
-            selectedShape = shape;
+            sizeSelection.style.display = 'block';
+            toolDetails.style.display = 'none';
             shapeSelection.style.display = 'none';
-            showPlastinaAvailability();
+            angleSelection.style.display = 'none';
+            availability.style.display = 'none';
+            addToolForm.style.display = 'none'; 
         });
-        shapeSelection.appendChild(button);
+        plastinySubcategories.appendChild(li);
     }
 }
 
-// Отображение таблицы доступности для пластин
-function showPlastinaAvailability() {
-    availability.style.display = 'block';
-    availabilityTable.innerHTML = '';
-
-    const tools = toolsData['plastiny'][selectedSubcategory]?.shapes?.[selectedShape];
-    if (!tools) {
-        console.error(`Tools not found for shape ${selectedShape} in subcategory ${selectedSubcategory}`);
-        return;
-    }
-    tools.forEach(item => {
-        const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
-        const quantityCell = document.createElement('td');
-        nameCell.textContent = item.name;
-        quantityCell.textContent = item.quantity;
-        row.appendChild(nameCell);
-        row.appendChild(quantityCell);
-        availabilityTable.appendChild(row);
-    });
-
-    // Проверяем, существует ли уже кнопка "Создать новый"
-    if (!document.getElementById('addButton') && userRole === 'Admin') {
-        // Создаем кнопку "Создать новый"
-        const addButton = document.createElement('button');
-        addButton.id = 'addButton';
-        addButton.textContent = 'Создать новый';
-        addButton.addEventListener('click', function () {
-            // Показываем форму для добавления нового инструмента
-            addToolForm.style.display = 'block';
-        });
-
-        // Добавляем кнопку в DOM
-        availability.appendChild(addButton);
-    }
-}
-
-// Экспортируем функции
-export { setupWebSocket, setupEventListeners, displayPlastinySubcategories };
+export { setupWebSocket, setupEventListeners };
