@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const WebSocket = require('ws');
 
 let mainWindow;
 
@@ -19,6 +20,7 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'client', 'login.html'));
   mainWindow.webContents.openDevTools();
 
+  // Установка заголовка CSP
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -52,7 +54,7 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
         mainWindow.webContents.once('did-finish-load', () => {
           mainWindow.webContents.send('userRole', data.role);
-          console.log('User role sent to renderer:', data.role); // Отладочная информация
+          console.log('User role sent to renderer:', data.role); // Добавленная отладочная информация
         });
       } else {
         console.error('Invalid username or password');
@@ -60,6 +62,7 @@ function createWindow() {
     })
     .catch(error => console.error('Error during login:', error));
   });
+  
 }
 
 app.on('ready', createWindow);
