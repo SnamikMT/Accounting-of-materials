@@ -7,6 +7,27 @@ let selectedShape = '';
 let selectedAngle = '';
 let userRole = ''; // Роль пользователя
 
+// Определяем роль пользователя из localStorage
+function getUserRoleFromStorage() {
+    console.log(localStorage.getItem('userRole'))
+    return localStorage.getItem('userRole');
+}
+
+// Функция для отображения или скрытия формы добавления инструмента в зависимости от роли пользователя
+function toggleAddToolForm() {
+    const addToolForm = document.getElementById('addToolForm');
+    const userRole = getUserRoleFromStorage();
+    if (userRole === 'Admin') {
+        addToolForm.style.display = 'block';
+    } else {
+        addToolForm.style.display = 'none';
+    }
+}
+
+// Вызываем функцию для отображения или скрытия формы при загрузке страницы
+toggleAddToolForm();
+
+
 function setupWebSocket(ws) {
     ws.onopen = function () {
         console.log('Connected to WebSocket server');
@@ -22,7 +43,6 @@ function setupWebSocket(ws) {
         } else if (data.type === 'userInfo') {
             userRole = data.payload.role;
             console.log(`User role received in setupWebSocket: ${userRole}`);
-            showAvailability();
         }
     };
 }
@@ -222,27 +242,11 @@ function showAvailability() {
             availabilityTable.appendChild(row);
         });
 
-        // Проверяем, существует ли уже кнопка "Создать новый" и является ли пользователь администратором
-        const addButton = document.getElementById('addButton');
-        if (!addButton && userRole === 'Admin') {
-            // Создаем кнопку "Создать новый"
-            const newAddButton = document.createElement('button');
-            newAddButton.id = 'addButton';
-            newAddButton.textContent = 'Создать новый';
-            newAddButton.addEventListener('click', function () {
-                // Показываем форму для добавления нового инструмента
-                addToolForm.style.display = 'block';
-            });
-
-            // Добавляем кнопку в DOM
-            availability.appendChild(newAddButton);
-        }
     } else {
-        console.error(`Tools not found for ${selectedShape} at ${selectedAngle}`);
+        console.error('Tools not found');
     }
 }
 
-// Отображение подкатегорий для пластин
 function displayPlastinySubcategories() {
     const plastinyData = toolsData['plastiny'];
     for (const subcategory in plastinyData) {

@@ -3,41 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'">
   <title>Inventory Management</title>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <div class="container">
     <h1>Inventory Management</h1>
-    <button id="materials">Materials</button>
-    <button id="tools">Tools</button>
-    <button id="requests">Requests</button>
+    <div class="menu">
+      <button id="materials" class="menu-button">Materials</button>
+      <button id="tools" class="menu-button">Tools</button>
+      <button id="requests" class="menu-button">Requests</button>
+    </div>
 
-    <div id="toolCategories" style="display:none;">
+    <div id="toolCategories" class="category" style="display:none;">
       <h2>Tool Categories</h2>
       <ul>
-        <li id="tokarny" class="clickable">Токарный</li>
-        <li id="frezerny" class="clickable">Фрезерный</li>
-        <li id="slesarny" class="clickable">Слесарный</li>
-        <li id="sverlilny" class="clickable">Сверлильный</li>
-        <li id="masla" class="clickable">Масла</li>
-        <li id="sozhi" class="clickable">СОЖи</li>
-        <li id="hozInst" class="clickable">Хоз.Инстр</li>
+        <li id="tokarny" class="subcategory">Токарный</li>
+        <li id="frezerny" class="subcategory">Фрезерный</li>
+        <li id="slesarny" class="subcategory">Слесарный</li>
+        <li id="sverlilny" class="subcategory">Сверлильный</li>
+        <li id="masla" class="subcategory">Масла</li>
+        <li id="sozhi" class="subcategory">СОЖи</li>
+        <li id="hozInst" class="subcategory">Хоз.Инстр</li>
       </ul>
     </div>
 
     <div id="subcategories" style="display:none;">
       <div id="tokarnySubcategories" style="display:none;">
         <h2>Tokarny Subcategories</h2>
-        <ul>
-          <li id="rezcy" class="clickable">Резцы</li>
-          <li id="plastiny" class="clickable">Пластины</li>
+        <ul class="subcategory-list">
+          <li id="rezcy" class="subcategory-item">Резцы</li>
+          <li id="plastiny" class="subcategory-item">Пластины</li>
         </ul>
       </div>
     </div>
+    
 
-    <div id="sizeSelection" style="display:none;">
+    <div id="sizeSelection" class="subcategory" style="display:none;">
       <h2>Выбор Сечения</h2>
       <ul>
         <li class="size-option" data-size="25x25">25x25</li>
@@ -46,12 +48,12 @@
       </ul>
     </div>
 
-    <div id="toolDetails" style="display:none;">
+    <div id="toolDetails" class="subcategory" style="display:none;">
       <h2 id="toolTitle">Tool Details</h2>
       <ul id="toolList"></ul>
     </div>
 
-    <div id="shapeSelection" style="display:none;">
+    <div id="shapeSelection" class="subcategory" style="display:none;">
       <h2>Выбор Формы</h2>
       <ul>
         <li class="shape-option" data-shape="Круглые">Круглые</li>
@@ -61,7 +63,7 @@
       </ul>
     </div>
 
-    <div id="angleSelection" style="display:none;">
+    <div id="angleSelection" class="subcategory" style="display:none;">
       <h2>Выбор Угла</h2>
       <ul>
         <li class="angle-option" data-angle="80°">80°</li>
@@ -70,20 +72,20 @@
       </ul>
     </div>
 
-    <div id="availability" style="display:none;">
+    <div id="availability" class="subcategory" style="display:none;">
       <h2>Доступность</h2>
-      <table id="availabilityTable">
+      <table class="styled-table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Quantity</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="availabilityTable"></tbody>
       </table>
     </div>
 
-    <form id="addToolForm" style="display:none;">
+    <form id="addToolForm" class="subcategory" style="display:none;">
       <h2>Add Tool</h2>
       <label for="toolName">Tool Name:</label>
       <input type="text" id="toolName" required>

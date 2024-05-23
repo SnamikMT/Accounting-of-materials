@@ -137,7 +137,7 @@ app.post('/api/login', (req, res) => {
 });
 
 const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  console.log(`Server lvistening on port ${port}`);
 });
 
 const WebSocketServer = require('ws').Server;
