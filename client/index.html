@@ -8,16 +8,21 @@
 </head>
 <body>
   <div class="container">
-    <h1>Inventory Management</h1>
-    <div class="menu">
-      <button id="materials" class="menu-button">Materials</button>
-      <button id="tools" class="menu-button">Tools</button>
-      <button id="requests" class="menu-button">Requests</button>
-    </div>
+    <header>
+      <div class="header-left">
+        <h1 class="header-title">Inventory Management</h1>
+      </div>
+      <div class="menu">
+        <button id="materials" class="menu-button">Материалы</button>
+        <button id="tools" class="menu-button">Инструменты</button>
+        <button id="requests" class="menu-button">Запросы</button>
+      </div>
+      <button id="logout" class="logout-button">Выход</button>
+    </header>
 
     <div id="toolCategories" class="category" style="display:none;">
-      <h2>Tool Categories</h2>
-      <ul>
+      <h2>Категории инструментов</h2>
+      <ul class="categories-grid">
         <li id="tokarny" class="subcategory">Токарный</li>
         <li id="frezerny" class="subcategory">Фрезерный</li>
         <li id="slesarny" class="subcategory">Слесарный</li>
@@ -30,18 +35,17 @@
 
     <div id="subcategories" style="display:none;">
       <div id="tokarnySubcategories" style="display:none;">
-        <h2>Tokarny Subcategories</h2>
+        <h2>Подкатегория</h2>
         <ul class="subcategory-list">
           <li id="rezcy" class="subcategory-item">Резцы</li>
           <li id="plastiny" class="subcategory-item">Пластины</li>
         </ul>
       </div>
     </div>
-    
 
     <div id="sizeSelection" class="subcategory" style="display:none;">
       <h2>Выбор Сечения</h2>
-      <ul>
+      <ul class="sechenie" style="padding: 0;">
         <li class="size-option" data-size="25x25">25x25</li>
         <li class="size-option" data-size="16x16">16x16</li>
         <li class="size-option" data-size="12x12">12x12</li>
@@ -49,13 +53,13 @@
     </div>
 
     <div id="toolDetails" class="subcategory" style="display:none;">
-      <h2 id="toolTitle">Tool Details</h2>
-      <ul id="toolList"></ul>
+      <h2 id="toolTitle">Подразделение инструмента</h2>
+      <ul id="toolList" style="padding: 0; cursor: pointer;"></ul>
     </div>
 
     <div id="shapeSelection" class="subcategory" style="display:none;">
       <h2>Выбор Формы</h2>
-      <ul>
+      <ul class="forms" style="padding: 0;">
         <li class="shape-option" data-shape="Круглые">Круглые</li>
         <li class="shape-option" data-shape="Ромбические">Ромбические</li>
         <li class="shape-option" data-shape="Квадратные">Квадратные</li>
@@ -65,7 +69,7 @@
 
     <div id="angleSelection" class="subcategory" style="display:none;">
       <h2>Выбор Угла</h2>
-      <ul>
+      <ul class="triangle" style="padding: 0;">
         <li class="angle-option" data-angle="80°">80°</li>
         <li class="angle-option" data-angle="55°">55°</li>
         <li class="angle-option" data-angle="35°">35°</li>
@@ -73,25 +77,25 @@
     </div>
 
     <div id="availability" class="subcategory" style="display:none;">
-      <h2>Доступность</h2>
+      <h2>Склад</h2>
       <table class="styled-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Quantity</th>
+            <th>Наименование</th>
+            <th>Количество</th>
           </tr>
         </thead>
         <tbody id="availabilityTable"></tbody>
       </table>
     </div>
 
-    <form id="addToolForm" class="subcategory" style="display:none;">
-      <h2>Add Tool</h2>
-      <label for="toolName">Tool Name:</label>
+    <form id="addToolForm" class="subcategoryAdd" style="display:none;">
+      <h2>Добавить инструмент</h2>
+      <label for="toolName">Наименование инструмента:</label>
       <input type="text" id="toolName" required>
-      <label for="toolQuantity">Quantity:</label>
+      <label for="toolQuantity">Количество:</label>
       <input type="number" id="toolQuantity" required>
-      <button type="submit">Add Tool</button>
+      <button type="submit" class="AddButton">Добавить</button>
     </form>
   </div>
   

@@ -7,6 +7,10 @@ let selectedShape = '';
 let selectedAngle = '';
 let userRole = ''; // Роль пользователя
 
+document.getElementById('logout').addEventListener('click', function() {
+    window.location.replace('login.html');
+  });
+
 // Определяем роль пользователя из localStorage
 function getUserRoleFromStorage() {
     console.log(localStorage.getItem('userRole'))

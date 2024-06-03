@@ -54,7 +54,7 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
         mainWindow.webContents.once('did-finish-load', () => {
           mainWindow.webContents.send('userRole', data.role);
-          console.log('User role sent to renderer:', data.role); // Добавленная отладочная информация
+          console.log('User role sent to renderer:', data.role);
         });
       } else {
         console.error('Invalid username or password');

@@ -149,7 +149,7 @@ wss.on('connection', function connection(ws) {
     console.log('received:', data);
 
     if (data.type === 'getUserInfo') {
-      const userInfo = { role: 'Admin' }; // Пример, в реальной ситуации данные о пользователе можно брать из сессии или JWT токена
+      const userInfo = { role: 'Admin' };
       ws.send(JSON.stringify({ type: 'userInfo', payload: userInfo }));
     }
 

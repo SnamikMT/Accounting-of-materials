@@ -10,18 +10,70 @@ body {
   padding: 20px;
 }
 
-h1 {
-  text-align: center;
+.AddButton {
+  background-color: #708fff;
+  margin-top: 10px;
+  border: none;
+  color: #fff;
+  padding: 6px 50px;
+  margin: 9px 0px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.subcategoryAdd {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #202836;
+  padding: 20px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  color: #fff;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  margin: 0;
 }
 
 .menu {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .menu-button {
-  background-color: #007bff;
+  background-color: #708fff;
+  border: none;
+  color: #fff;
+  padding: 10px 50px;
+  margin: 0 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.menu-button:hover {
+  background-color: #8aa3ff;
+}
+
+.logout-button {
+  background: none;
+  font-size: 15px;
   border: none;
   color: #fff;
   padding: 10px 20px;
@@ -29,15 +81,27 @@ h1 {
   cursor: pointer;
 }
 
-.menu-button:hover {
-  background-color: #0056b3;
+.logout-button:hover {
+  color: #cc0000;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 60px; /* Отступ сверху, чтобы заголовок не перекрывался меню */
 }
 
 /* Стилизация элементов списка категорий */
 .subcategory {
-  list-style-type: none; /* Убираем маркеры списка */
-  margin: 0; /* Убираем внешние отступы */
-  padding: 0; /* Убираем внутренние отступы */
+  list-style-type: none;
+  margin: 0px;
+  padding: 5px;
+  margin-bottom: 20px;
+  width: 30%;
+  cursor: pointer;
+}
+
+.category {
+  margin-top: 100px;
 }
 
 .subcategory li {
@@ -46,7 +110,7 @@ h1 {
 }
 
 .subcategory li button {
-  background-color: #007bff; /* Цвет фона кнопки */
+  background-color: #202836; /* Цвет фона кнопки */
   border: none; /* Убираем границу */
   color: #fff; /* Цвет текста */
   padding: 10px 20px; /* Отступы внутри кнопки */
@@ -56,7 +120,32 @@ h1 {
 }
 
 .subcategory li button:hover {
-  background-color: #0056b3; /* Цвет фона при наведении */
+  background-color: #708fff; /* Цвет фона при наведении */
+}
+
+/* Стилизация элементов списка категорий */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none; /* Убираем маркеры списка */
+}
+
+.categories-grid li {
+  background-color: #202836; /* Цвет фона */
+  color: #fff; /* Цвет текста */
+  padding: 10px 45px; /* Отступы внутри li элементов */
+  margin-bottom: 10px; /* Отступ между элементами */
+  border-radius: 5px; /* Скругление углов */
+  text-align: center;
+  cursor: pointer; /* Указатель при наведении */
+  transition: background-color 0.3s; /* Плавное изменение цвета фона */
+}
+
+.categories-grid li:hover {
+  background-color: #708fff; /* Цвет фона при наведении */
 }
 
 /* Стилизация подкатегорий */
@@ -64,6 +153,7 @@ h1 {
   list-style-type: none; /* Убираем маркеры списка */
   margin: 0; /* Убираем внешние отступы */
   padding: 0; /* Убираем внутренние отступы */
+  width: 20%;
 }
 
 .subcategory-list li {
@@ -71,7 +161,7 @@ h1 {
 }
 
 .subcategory-list li button {
-  background-color: #007bff; /* Цвет фона кнопки */
+  background-color: #202836; /* Цвет фона кнопки */
   border: none; /* Убираем границу */
   color: #fff; /* Цвет текста */
   padding: 10px 20px; /* Отступы внутри кнопки */
@@ -81,12 +171,12 @@ h1 {
 }
 
 .subcategory-list li button:hover {
-  background-color: #0056b3; /* Цвет фона при наведении */
+  background-color: #708fff; /* Цвет фона при наведении */
 }
 
 /* Стилизация всех li элементов */
 li {
-  background-color: #007bff; /* Цвет фона */
+  background-color: #202836; /* Цвет фона */
   color: #fff; /* Цвет текста */
   padding: 10px 20px; /* Отступы внутри li элементов */
   margin-bottom: 10px; /* Отступ между элементами */
@@ -95,10 +185,8 @@ li {
 
 /* При наведении меняем цвет фона */
 li:hover {
-  background-color: #0056b3;
+  background-color: #708fff;
 }
-
-
 
 /* Стилизация таблицы */
 .styled-table {
@@ -115,38 +203,18 @@ li:hover {
 }
 
 .styled-table th {
-  background-color: #007bff;
-  color: #fff;
+  background-color: #202836;
+  color: white;
 }
 
-.styled-table tr:nth-child(even) {
+.styled-table tbody tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-.styled-table tr:hover {
+.styled-table tbody tr:hover {
   background-color: #ddd;
 }
 
-/* Стилизация формы */
-form {
-  margin-top: 20px;
-}
-
-form label,
-form input,
-form button {
-  margin: 5px 0;
-  display: block;
-}
-
-form button {
-  background-color: #007bff;
-  border: none;
-  color: #fff;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-form button:hover {
-  background-color: #0056b3;
+.styled-table tbody td {
+  border: 1px solid #ddd;
 }
