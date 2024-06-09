@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Запросы на пополнение</title>
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    /* Основные стили */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header-title {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .columns {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .column {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .column h2 {
+      text-align: center;
+    }
+
+    .request-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .request-list li {
+      background-color: #535353;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #fff;
+    }
+
+    .request-list li .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .request-list li .buttons button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .process-button {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .receive-button {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    @keyframes blink {
+      0% { background-color: red; }
+      50% { background-color: transparent; }
+      100% { background-color: red; }
+    }
+
+    .blinking {
+      animation: blink 1s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="header-title">Запросы на пополнение</h1>
+    <div class="columns">
+      <div class="column">
+        <h2>Заявки</h2>
+        <ul id="pendingList" class="request-list"></ul>
+      </div>
+      <div class="column">
+        <h2>Ожидание доставки</h2>
+        <ul id="waitingList" class="request-list"></ul>
+      </div>
+      <div class="column">
+        <h2>Получено</h2>
+        <ul id="receivedList" class="request-list"></ul>
+      </div>
+    </div>
+  </div>
+  
+  <script src="./js/renderer.js"></script>
+</body>
+</html>

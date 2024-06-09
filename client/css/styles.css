@@ -218,3 +218,16 @@ li:hover {
 .styled-table tbody td {
   border: 1px solid #ddd;
 }
+
+/* Определение ключевых кадров для анимации мигания */
+@keyframes blink {
+  0% { background-color: red; }
+  50% { background-color: transparent; }
+  100% { background-color: red; }
+}
+
+/* Класс для применения анимации мигания */
+.blinking {
+  animation: blink 1s infinite;
+}
+

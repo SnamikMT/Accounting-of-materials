@@ -9,11 +9,10 @@ let userRole = ''; // Роль пользователя
 
 document.getElementById('logout').addEventListener('click', function() {
     window.location.replace('login.html');
-  });
+});
 
 // Определяем роль пользователя из localStorage
 function getUserRoleFromStorage() {
-    console.log(localStorage.getItem('userRole'))
     return localStorage.getItem('userRole');
 }
 
@@ -31,7 +30,6 @@ function toggleAddToolForm() {
 // Вызываем функцию для отображения или скрытия формы при загрузке страницы
 toggleAddToolForm();
 
-
 function setupWebSocket(ws) {
     ws.onopen = function () {
         console.log('Connected to WebSocket server');
@@ -47,20 +45,28 @@ function setupWebSocket(ws) {
         } else if (data.type === 'userInfo') {
             userRole = data.payload.role;
             console.log(`User role received in setupWebSocket: ${userRole}`);
+        } else if (data.type === 'newRequests') {
+            // Предположим, что сервер отправляет обновленные данные о заявках
+            const hasMaterialRequests = data.payload.some(request => request.type === 'Материал');
+            console.log('Received new requests:', data.payload);
+            console.log('Has Material Requests:', hasMaterialRequests);
+
+            if (hasMaterialRequests) {
+                document.getElementById('requests').classList.add('blinking');
+                console.log('Adding blinking class to requests button via WebSocket');
+            } else {
+                document.getElementById('requests').classList.remove('blinking');
+                console.log('Removing blinking class from requests button via WebSocket');
+            }
         }
     };
 }
 
+
 function setupEventListeners() {
     document.getElementById('tools').addEventListener('click', function () {
-        toolCategories.style.display = 'block';
-        subcategories.style.display = 'none';
-        sizeSelection.style.display = 'none';
-        toolDetails.style.display = 'none';
-        shapeSelection.style.display = 'none';
-        angleSelection.style.display = 'none';
-        availability.style.display = 'none';
-        addToolForm.style.display = 'none';
+        hideAllSections(); // Скрываем все секции
+        document.getElementById('toolCategories').style.display = 'block';
     });
 
     document.getElementById('toolCategories').addEventListener('click', function (event) {
@@ -71,6 +77,7 @@ function setupEventListeners() {
             addToolForm.style.display = 'none';  // скрываем форму при смене категории
         } else if (selectedCategory === 'plastiny') {
             subcategories.style.display = 'block';
+            tokarnySubcategories.style.display = 'none';
             plastinySubcategories.style.display = 'block';
             displayPlastinySubcategories();
             addToolForm.style.display = 'none';  // скрываем форму при смене категории
@@ -148,7 +155,7 @@ function setupEventListeners() {
                     toolType: selectedTool,  // тип инструмента (например, "Проходной")
                     shape: selectedShape,
                     angle: selectedAngle,
-                    name: toolName, // имя инструмента (например, "Tool A")
+                    name: toolName, // имя инструмента (например, "Tool
                     quantity: toolQuantity
                 })
             })
@@ -267,6 +274,18 @@ function displayPlastinySubcategories() {
         });
         plastinySubcategories.appendChild(li);
     }
+}
+
+// Функция для скрытия всех секций, кроме формы добавления инструмента
+function hideAllSections() {
+    toolCategories.style.display = 'block';
+    subcategories.style.display = 'none';
+    sizeSelection.style.display = 'none';
+    toolDetails.style.display = 'none';
+    shapeSelection.style.display = 'none';
+    angleSelection.style.display = 'none';
+    availability.style.display = 'none';
+    addToolForm.style.display = 'none';
 }
 
 export { setupWebSocket, setupEventListeners };
