@@ -12,9 +12,15 @@ export function initRequestsPage() {
     const waitingList = document.getElementById('waitingList');
     const receivedList = document.getElementById('receivedList');
 
-    pendingList.innerHTML = '';
-    waitingList.innerHTML = '';
-    receivedList.innerHTML = '';
+    if (pendingList) {
+        pendingList.innerHTML = '';
+    }
+    if (waitingList) {
+        waitingList.innerHTML = '';
+    }
+    if (receivedList) {
+        receivedList.innerHTML = '';
+    }
 
     requestsData.forEach(request => {
         const listItem = document.createElement('li');
@@ -26,11 +32,11 @@ export function initRequestsPage() {
                 ${request.status === 'Received' ? `<span>Получено</span>` : ''}
             </div>
         `;
-        if (request.status === 'Pending') {
+        if (request.status === 'Pending' && pendingList) {
             pendingList.appendChild(listItem);
-        } else if (request.status === 'Waiting') {
+        } else if (request.status === 'Waiting' && waitingList) {
             waitingList.appendChild(listItem);
-        } else if (request.status === 'Received') {
+        } else if (request.status === 'Received' && receivedList) {
             receivedList.appendChild(listItem);
         }
     });
@@ -60,7 +66,6 @@ function handleReceiveButtonClick(event) {
     const request = requestsData.find(req => req.id == requestId);
     if (request) {
         request.status = 'Received';
-
         initRequestsPage();
     }
 }
@@ -71,10 +76,12 @@ export function checkForPendingRequests() {
         request => request.type === 'Материал' && (request.status === 'Pending' || request.status === 'Waiting')
     );
 
-    if (hasPendingMaterialRequests) {
-        requestsButton.classList.add('blinking');
-    } else {
-        requestsButton.classList.remove('blinking');
+    if (requestsButton) {
+        if (hasPendingMaterialRequests) {
+            requestsButton.classList.add('blinking');
+        } else {
+            requestsButton.classList.remove('blinking');
+        }
     }
 }
 
@@ -84,3 +91,8 @@ export function handleWebSocketMessage(event) {
     requestsData.push(newRequest);
     initRequestsPage();
 }
+
+// Убедитесь, что initRequestsPage вызывается только после полной загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    initRequestsPage();
+});

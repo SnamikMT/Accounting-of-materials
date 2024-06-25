@@ -1,10 +1,37 @@
-import { setupWebSocket, setupEventListeners } from './tokarny.js';
-import { initRequestsPage, checkForPendingRequests, handleWebSocketMessage } from './requests.js';
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const contentContainer = document.getElementById('contentContainer');
     const requestsButton = document.getElementById('requests');
     const toolsButton = document.getElementById('tools');
+
+    // Получение конфигурации из контекста главного процесса
+    try {
+        const config = await window.api.getConfig();
+
+        // Убедитесь, что WebSocket доступен
+        if (typeof WebSocket !== 'undefined') {
+            const ws = new WebSocket(`ws://${config.serverAddress.split('/')[2]}`); // Используем серверный адрес из конфигурации
+
+            ws.onopen = () => {
+                console.log('WebSocket connection established');
+            };
+
+            ws.onmessage = (event) => {
+                console.log('WebSocket message received:', event.data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
+        } else {
+            console.error('WebSocket is not available in this environment');
+        }
+    } catch (error) {
+        console.error('Error fetching configuration:', error);
+    }
 
     requestsButton.addEventListener('click', async () => {
         hideAllSections();
@@ -18,12 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadRequestsHtml() {
         try {
-            const response = await fetch('./requests.html');
+            const response = await fetch('requests.html'); // или `${config.serverAddress}/requests.html` если используете конфигурацию
             const htmlContent = await response.text();
             contentContainer.innerHTML = htmlContent;
-
-            // Инициализация контента страницы запросов
-            initRequestsPage();
         } catch (error) {
             console.error('Ошибка при загрузке requests.html:', error);
         }
@@ -31,11 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadToolsHtml() {
         try {
-            const response = await fetch('./tools.html');
+            const response = await fetch('tools.html'); // или `${config.serverAddress}/tools.html` если используете конфигурацию
             const htmlContent = await response.text();
             contentContainer.innerHTML = htmlContent;
-            // Инициализация контента страницы инструментов
-            // initToolsPage();
         } catch (error) {
             console.error('Ошибка при загрузке tools.html:', error);
         }
@@ -47,16 +69,4 @@ document.addEventListener('DOMContentLoaded', () => {
             section.style.display = 'none';
         });
     }
-
-    // Пример инициализации для WebSocket
-    const ws = new WebSocket('ws://localhost:3000');
-    ws.addEventListener('message', (event) => {
-        handleWebSocketMessage(event); // Обработка новых данных о заявках через WebSocket
-    });
-
-    setupWebSocket(ws);
-    setupEventListeners();
-
-    // Изначально проверяем наличие незакрытых заявок
-    checkForPendingRequests();
 });

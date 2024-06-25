@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
+const { Server } = require('ws');
 
 const app = express();
 const port = 3000;
@@ -16,8 +17,9 @@ app.use(cors());
 app.use(helmet());
 app.use(express.static(path.join(__dirname, 'client')));
 
+// Content Security Policy для WebSocket и других ресурсов
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', "connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
+  res.setHeader('Content-Security-Policy', "connect-src 'self' ws://192.168.1.100:3000 http://192.168.1.100:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
   next();
 });
 
@@ -137,11 +139,10 @@ app.post('/api/login', (req, res) => {
 });
 
 const server = app.listen(port, () => {
-  console.log(`Server lvistening on port ${port}`);
+  console.log(`Сервер запущен на порту ${port}`);
 });
 
-const WebSocketServer = require('ws').Server;
-const wss = new WebSocketServer({ server });
+const wss = new Server({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
@@ -158,6 +159,7 @@ wss.on('connection', function connection(ws) {
       fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
     }
 
+    // Отправка данных всем подключенным клиентам
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
@@ -165,7 +167,8 @@ wss.on('connection', function connection(ws) {
     });
   });
 
+  // Отправка текущего состояния инструментов новому клиенту при подключении
   ws.send(JSON.stringify({ type: 'initial', payload: tools }));
 });
 
-console.log('WebSocket server is running on ws://localhost:3000');
+console.log('WebSocket server is running on ws://0.0.0.0:3000');

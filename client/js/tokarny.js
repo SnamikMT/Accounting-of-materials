@@ -8,18 +8,13 @@ let selectedAngle = '';
 let userRole = ''; // Роль пользователя
 
 document.getElementById('logout').addEventListener('click', function() {
-    window.location.replace('login.html');
+    // Используем API для перехода на страницу логина
+    window.api.send('logout');
 });
-
-// Определяем роль пользователя из localStorage
-function getUserRoleFromStorage() {
-    return localStorage.getItem('userRole');
-}
 
 // Функция для отображения или скрытия формы добавления инструмента в зависимости от роли пользователя
 function toggleAddToolForm() {
     const addToolForm = document.getElementById('addToolForm');
-    const userRole = getUserRoleFromStorage();
     if (userRole === 'Admin') {
         addToolForm.style.display = 'block';
     } else {
@@ -27,10 +22,15 @@ function toggleAddToolForm() {
     }
 }
 
-// Вызываем функцию для отображения или скрытия формы при загрузке страницы
-toggleAddToolForm();
+// Получаем роль пользователя через IPC, когда страница загружается
+window.api.receive('userRole', (role) => {
+    userRole = role;
+    toggleAddToolForm(); // Обновляем видимость формы добавления инструмента на основе роли пользователя
+});
 
-function setupWebSocket(ws) {
+function setupWebSocket(config) {
+    const ws = new WebSocket(`ws://${config.serverAddress.split('/')[2]}`); // Используем серверный адрес из конфигурации
+
     ws.onopen = function () {
         console.log('Connected to WebSocket server');
         ws.send(JSON.stringify({ type: 'getUserInfo' }));
@@ -45,6 +45,7 @@ function setupWebSocket(ws) {
         } else if (data.type === 'userInfo') {
             userRole = data.payload.role;
             console.log(`User role received in setupWebSocket: ${userRole}`);
+            toggleAddToolForm(); // Обновляем видимость формы добавления инструмента на основе новой информации о роли пользователя
         } else if (data.type === 'newRequests') {
             // Предположим, что сервер отправляет обновленные данные о заявках
             const hasMaterialRequests = data.payload.some(request => request.type === 'Материал');
@@ -60,8 +61,29 @@ function setupWebSocket(ws) {
             }
         }
     };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket connection closed');
+    };
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Получаем конфигурацию
+        const config = await window.api.getConfig();
+
+        // Настраиваем WebSocket соединение с использованием конфигурации
+        setupWebSocket(config);
+    } catch (error) {
+        console.error('Error setting up WebSocket:', error);
+    }
+
+    setupEventListeners();
+});
 
 function setupEventListeners() {
     document.getElementById('tools').addEventListener('click', function () {
@@ -155,7 +177,7 @@ function setupEventListeners() {
                     toolType: selectedTool,  // тип инструмента (например, "Проходной")
                     shape: selectedShape,
                     angle: selectedAngle,
-                    name: toolName, // имя инструмента (например, "Tool
+                    name: toolName, // имя инструмента (например, "Tool")
                     quantity: toolQuantity
                 })
             })
@@ -252,7 +274,6 @@ function showAvailability() {
             row.appendChild(quantityCell);
             availabilityTable.appendChild(row);
         });
-
     } else {
         console.error('Tools not found');
     }
