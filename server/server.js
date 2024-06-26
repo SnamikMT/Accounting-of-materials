@@ -9,13 +9,19 @@ const { Server } = require('ws');
 const app = express();
 const port = 3000;
 
+// Пути к файлам конфигурации и данным
 const toolsPath = path.join(__dirname, 'tools.json');
+const configPath = path.join(__dirname, 'config.json');
+const usersPath = path.join(__dirname, 'users.json');
+
+// Загружаем данные инструментов
 let tools = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
 
+// Настройка middlewares
 app.use(bodyParser.json());
 app.use(cors());
 app.use(helmet());
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, 'client'))); // Обслуживание статических файлов из папки client
 
 // Content Security Policy для WebSocket и других ресурсов
 app.use((req, res, next) => {
@@ -23,6 +29,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// Маршрут для обслуживания config.json
+app.get('/config.json', (req, res) => {
+  res.sendFile(configPath);
+});
+
+// Пример API маршрутов
 app.get('/api/tools/:subcategory', (req, res) => {
   const subcategory = req.params.subcategory;
   res.json(tools[subcategory] || []);
@@ -109,15 +121,13 @@ app.post('/api/tools/addPlastina', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => {
-  const usersFilePath = path.join(__dirname, 'users.json');
-  res.sendFile(usersFilePath);
+  res.sendFile(usersPath);
 });
 
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  const usersFilePath = path.join(__dirname, 'users.json');
 
-  fs.readFile(usersFilePath, 'utf8', (err, data) => {
+  fs.readFile(usersPath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading users file:', err);
       res.status(500).json({ error: 'Internal Server Error' });

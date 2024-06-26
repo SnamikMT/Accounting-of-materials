@@ -1,64 +1,73 @@
-// В login.js
-
-async function checkCredentials(username, password) {
-    try {
-        const config = await getConfig(); // Получаем конфигурацию через ipcRenderer
-        const response = await fetch(`${config.serverAddress}/api/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Credentials are valid');
-            return { isValid: true, role: data.role };
-        } else {
-            console.log('Credentials are invalid');
-            return { isValid: false, role: null };
-        }
-    } catch (error) {
-        console.error('Error checking credentials:', error);
-        return { isValid: false, role: null };
-    }
-}
-
-async function getConfig() {
-    return new Promise((resolve, reject) => {
-        window.api.send('get-config'); // Отправляем запрос на получение конфигурации
-        window.api.receive('config-data', (config) => {
-            resolve(config);
-        });
-    });
-}
-
-async function handleSubmit(event) {
-    event.preventDefault();
-
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+document.addEventListener('DOMContentLoaded', () => {
+    const loginButton = document.querySelector('button[type="submit"]');
+    const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('error-message');
-
-    if (!username || !password) {
-        errorMessage.textContent = 'Please enter username and password';
-        errorMessage.style.display = 'block';
-        return;
-    }
-
-    const result = await checkCredentials(username, password);
-
-    if (result.isValid) {
-        localStorage.setItem('userRole', result.role);
-
-        // Отправляем IPC сообщение о успешном входе
-        window.api.send('login-success', result.role);
-
-    } else {
-        errorMessage.textContent = 'Invalid username or password';
-        errorMessage.style.display = 'block';
-    }
-}
-
-document.getElementById('loginForm').addEventListener('submit', handleSubmit);
+  
+    // Загружаем конфигурацию с сервера
+    fetch('/config.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to load configuration');
+        }
+        return response.json();
+      })
+      .then(config => {
+        const serverAddress = config.serverAddress; // Получаем адрес сервера из конфигурации
+  
+        if (loginButton && loginForm) {
+          loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+  
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+  
+            // Проверяем, что поля не пустые
+            if (username && password) {
+              console.log('Attempting to log in with:', username, password); // Отладка данных формы
+  
+              // Отправка данных на сервер
+              fetch(`${serverAddress}/api/login`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+              })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+                return response.json();
+              })
+              .then(data => {
+                if (data.success) {
+                  console.log('Login successful:', data);
+                  // Обработка успешного входа
+                  window.location.href = '/index.html'; // Пример перенаправления на другую страницу
+                } else {
+                  console.error('Login failed:', data.message);
+                  // Обработка ошибки входа
+                  errorMessage.textContent = 'Ошибка входа: ' + data.message;
+                  errorMessage.style.display = 'block';
+                }
+              })
+              .catch(error => {
+                console.error('Error during login:', error);
+                errorMessage.textContent = 'Произошла ошибка. Попробуйте снова.';
+                errorMessage.style.display = 'block';
+              });
+            } else {
+              console.error('Username and password are required');
+              errorMessage.textContent = 'Пожалуйста, введите имя пользователя и пароль.';
+              errorMessage.style.display = 'block';
+            }
+          });
+        } else {
+          console.error('Login form or login button not found in the DOM.');
+        }
+      })
+      .catch(error => {
+        console.error('Error loading configuration:', error);
+      });
+  });
+  

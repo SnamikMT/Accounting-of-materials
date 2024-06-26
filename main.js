@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const config = require('./config.json'); // Импорт конфигурационного файла
+const config = require('./server/config.json');
 
 let mainWindow;
 
