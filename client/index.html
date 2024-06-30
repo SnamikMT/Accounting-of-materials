@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://localhost:3000 http://192.168.0.108:3000 ws://localhost:3000 ws://192.168.0.108:3000; style-src 'self' 'unsafe-inline';">
   <title>Inventory Management</title>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
@@ -105,7 +104,28 @@
     <!-- Контент для динамической загрузки -->
   </div>
   
-  
+  <div id="requestsContainer" style="display:none;">
+    <h2>Запросы на Инструменты и Материалы</h2>
+    <div id="pendingRequests">
+        <h3>Запросы</h3>
+        <ul id="pendingList"></ul>
+    </div>
+    <div id="waitingRequests">
+        <h3>Ожидается поставка</h3>
+        <ul id="waitingList"></ul>
+    </div>
+    <div id="receivedRequests">
+        <h3>Получено</h3>
+        <ul id="receivedList"></ul>
+    </div>
+</div>
+
+
+
+  <script>
+    // Убедитесь, что serverAddress вставляется до загрузки других скриптов
+    const serverAddress = '{{serverAddress}}';
+  </script>
   <script type="module" src="./js/renderer.js"></script>
 </body>
 </html>

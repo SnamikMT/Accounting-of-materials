@@ -219,15 +219,111 @@ li:hover {
   border: 1px solid #ddd;
 }
 
-/* Определение ключевых кадров для анимации мигания */
-@keyframes blink {
-  0% { background-color: red; }
-  50% { background-color: transparent; }
-  100% { background-color: red; }
+/* Мигать кнопка Запросы */
+.blinking {
+  animation: blinkingAnimation 1s infinite;
 }
 
-/* Класс для применения анимации мигания */
-.blinking {
-  animation: blink 1s infinite;
+@keyframes blinkingAnimation {
+  0% { background-color: #ff0000; }
+  50% { background-color: #ffffff; }
+  100% { background-color: #ff0000; }
 }
+
+/* Основной контейнер запросов */
+.requests-section {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.request-columns {
+  display: flex;
+  justify-content: space-around;
+}
+
+.request-column {
+  flex: 1;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  min-height: 300px; /* Минимальная высота для колонок */
+  overflow-y: auto;
+  transition: background-color 0.5s, transform 0.5s; /* Добавляем плавные переходы */
+}
+
+.request-column h3 {
+  text-align: center;
+}
+
+.request-column ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.request-column li {
+  margin: 5px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.request-column li:hover {
+  transform: scale(1.05);
+}
+
+.blinking {
+  animation: blinkingAnimation 1s infinite;
+}
+
+@keyframes blinkingAnimation {
+  0% { background-color: #ff0000; }
+  50% { background-color: #ffffff; }
+  100% { background-color: #ff0000; }
+}
+
+/* Стили для кнопок внутри запросов */
+.request-column .buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.request-column button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.process-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.receive-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+/* Анимация перемещения запросов */
+@keyframes moveToWaiting {
+  from { transform: translateX(0); }
+  to { transform: translateX(150%); }
+}
+
+@keyframes moveToReceived {
+  from { transform: translateX(0); }
+  to { transform: translateX(150%); }
+}
+
 

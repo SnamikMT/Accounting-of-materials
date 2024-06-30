@@ -1,184 +1,96 @@
+// server/server.js
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
-const { Server } = require('ws');
+const WebSocket = require('ws');
 
 const app = express();
 const port = 3000;
 
-// Пути к файлам конфигурации и данным
-const toolsPath = path.join(__dirname, 'tools.json');
-const configPath = path.join(__dirname, 'config.json');
 const usersPath = path.join(__dirname, 'users.json');
 
-// Загружаем данные инструментов
-let tools = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
-
-// Настройка middlewares
+// Middlewares
 app.use(bodyParser.json());
 app.use(cors());
 app.use(helmet());
-app.use(express.static(path.join(__dirname, 'client'))); // Обслуживание статических файлов из папки client
+app.use(express.static(path.join(__dirname, '../client')));
 
-// Content Security Policy для WebSocket и других ресурсов
-app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', "connect-src 'self' ws://192.168.1.100:3000 http://192.168.1.100:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
-  next();
-});
+// WebSocket server
+const wss = new WebSocket.Server({ noServer: true });
 
-// Маршрут для обслуживания config.json
-app.get('/config.json', (req, res) => {
-  res.sendFile(configPath);
-});
+// Массив для хранения всех подключений WebSocket
+let clients = [];
 
-// Пример API маршрутов
-app.get('/api/tools/:subcategory', (req, res) => {
-  const subcategory = req.params.subcategory;
-  res.json(tools[subcategory] || []);
-});
+wss.on('connection', function connection(ws) {
+  console.log('Новое соединение WebSocket установлено');
+  
+  // Сохранение нового клиента
+  clients.push(ws);
 
-app.post('/api/tools/increase', (req, res) => {
-  const { category, subcategory, size, toolName, shape, angle } = req.body;
-  const tool = tools[category]?.[subcategory]?.sizes?.[size]?.tools?.[toolName]?.shapes?.[shape]?.angles?.[angle];
+  ws.on('message', function incoming(message) {
+    console.log('Получено сообщение от клиента:', message);
 
-  if (tool) {
-    tool.forEach(item => {
-      item.quantity++;
-    });
-    fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
-    res.json({ success: true });
-  } else {
-    res.status(404).json({ error: 'Tool not found' });
-  }
-});
-
-app.post('/api/tools/add', (req, res) => {
-  const { category, subcategory, size, toolType, shape, angle, name, quantity } = req.body;
-
-  const currentData = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
-
-  if (!currentData[category]) currentData[category] = {};
-  if (!currentData[category][subcategory]) currentData[category][subcategory] = { sizes: {} };
-  if (!currentData[category][subcategory].sizes[size]) currentData[category][subcategory].sizes[size] = { tools: {} };
-  if (!currentData[category][subcategory].sizes[size].tools[toolType]) {
-    currentData[category][subcategory].sizes[size].tools[toolType] = { shapes: {} };
-  }
-  if (!currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape]) {
-    currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape] = { angles: {} };
-  }
-  if (!currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape].angles[angle]) {
-    currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape].angles[angle] = [];
-  }
-
-  let toolExists = false;
-  for (let tool of currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape].angles[angle]) {
-    if (tool.name === name) {
-      tool.quantity += quantity;
-      toolExists = true;
-      break;
-    }
-  }
-
-  if (!toolExists) {
-    currentData[category][subcategory].sizes[size].tools[toolType].shapes[shape].angles[angle].push({ name, quantity });
-  }
-
-  fs.writeFileSync(toolsPath, JSON.stringify(currentData, null, 2));
-  res.json({ success: true });
-});
-
-app.get('/api/tools', (req, res) => {
-  const toolsData = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
-  res.json(toolsData);
-});
-
-app.post('/api/tools/addPlastina', (req, res) => {
-  const { category, subcategory, shape, angle, name, quantity } = req.body;
-
-  if (!tools[category]) tools[category] = {};
-  if (!tools[category][subcategory]) tools[category][subcategory] = { shapes: {} };
-  if (!tools[category][subcategory].shapes[shape]) tools[category][subcategory].shapes[shape] = { angles: {} };
-  if (!tools[category][subcategory].shapes[shape].angles[angle]) tools[category][subcategory].shapes[shape].angles[angle] = [];
-
-  let toolExists = false;
-  for (let tool of tools[category][subcategory].shapes[shape].angles[angle]) {
-    if (tool.name === name) {
-      tool.quantity += quantity;
-      toolExists = true;
-      break;
-    }
-  }
-
-  if (!toolExists) {
-    tools[category][subcategory].shapes[shape].angles[angle].push({ name, quantity });
-  }
-
-  fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
-  res.json({ success: true });
-});
-
-app.get('/api/users', (req, res) => {
-  res.sendFile(usersPath);
-});
-
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-
-  fs.readFile(usersPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading users file:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
-    }
-
-    try {
-      const users = JSON.parse(data);
-      if (users[username] && users[username].password === password) {
-        res.json({ success: true, role: users[username].role });
-      } else {
-        res.status(401).json({ error: 'Invalid username or password' });
+    // Рассылка сообщения всем клиентам
+    clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
       }
-    } catch (error) {
-      console.error('Error parsing users file:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+    });
   });
+
+  // Удаление клиента из списка при закрытии соединения
+  ws.on('close', () => {
+    clients = clients.filter(client => client !== ws);
+  });
+
+  // Пример отправки сообщения клиенту
+  ws.send('Вы успешно подключились к серверу WebSocket.');
 });
 
-const server = app.listen(port, () => {
+// HTTP обработчик для обработки WebSocket handshake
+app.server = app.listen(port, () => {
   console.log(`Сервер запущен на порту ${port}`);
 });
 
-const wss = new Server({ server });
-
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
-    const data = JSON.parse(message);
-    console.log('received:', data);
-
-    if (data.type === 'getUserInfo') {
-      const userInfo = { role: 'Admin' };
-      ws.send(JSON.stringify({ type: 'userInfo', payload: userInfo }));
-    }
-
-    if (data.type === 'updateToolInfo') {
-      tools[data.payload.subcategory] = data.payload.tools;
-      fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
-    }
-
-    // Отправка данных всем подключенным клиентам
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(data));
-      }
-    });
+app.server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (socket) => {
+    wss.emit('connection', socket, request);
   });
-
-  // Отправка текущего состояния инструментов новому клиенту при подключении
-  ws.send(JSON.stringify({ type: 'initial', payload: tools }));
 });
 
-console.log('WebSocket server is running on ws://0.0.0.0:3000');
+// Проверка пользователя
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  fs.readFile(usersPath, 'utf8', (err, data) => {
+    if (err) {
+      res.status(500).send('Error reading users file');
+      return;
+    }
+
+    let users;
+    try {
+      users = JSON.parse(data);
+    } catch (error) {
+      console.error('Error parsing users data:', error);
+      res.status(500).send('Error processing users data');
+      return;
+    }
+
+    if (!Array.isArray(users)) {
+      console.error('Users data is not an array');
+      res.status(500).send('Invalid users data');
+      return;
+    }
+
+    const user = users.find(u => u.username === username && u.password === password);
+    if (user) {
+      res.json({ success: true, role: user.role });
+    } else {
+      res.json({ success: false, message: 'Invalid username or password' });
+    }
+  });
+});
