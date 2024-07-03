@@ -4,11 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
+const WebSocket = require('ws');
 
 const app = express();
 const port = 3000;
 
 const toolsPath = path.join(__dirname, 'tools.json');
+const usersFilePath = path.join(__dirname, 'users.json');
 let tools = JSON.parse(fs.readFileSync(toolsPath, 'utf8'));
 
 app.use(bodyParser.json());
@@ -16,11 +18,13 @@ app.use(cors());
 app.use(helmet());
 app.use(express.static(path.join(__dirname, 'client')));
 
+// Установка CSP заголовка
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', "connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
+  res.setHeader('Content-Security-Policy', "connect-src 'self' ws://192.168.0.108:3000 http://192.168.0.108:3000; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
   next();
 });
 
+// API методы
 app.get('/api/tools/:subcategory', (req, res) => {
   const subcategory = req.params.subcategory;
   res.json(tools[subcategory] || []);
@@ -111,37 +115,29 @@ app.get('/api/users', (req, res) => {
   res.sendFile(usersFilePath);
 });
 
+// Добавляем обработчик POST /api/login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  const usersFilePath = path.join(__dirname, 'users.json');
 
-  fs.readFile(usersFilePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading users file:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
-    }
+  // Проверяем наличие пользователя с таким именем и паролем
+  const user = Object.keys(users).find(u => u === username && users[u].password === password);
 
-    try {
-      const users = JSON.parse(data);
-      if (users[username] && users[username].password === password) {
-        res.json({ success: true, role: users[username].role });
-      } else {
-        res.status(401).json({ error: 'Invalid username or password' });
-      }
-    } catch (error) {
-      console.error('Error parsing users file:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+  if (user) {
+    // Возвращаем роль пользователя (можно взять из users.json или установить статически)
+    // Например, в users.json добавьте role для каждого пользователя
+    res.json({ role: users[user].role || 'user' });
+  } else {
+    res.status(401).send('Invalid credentials');
+  }
 });
 
-const server = app.listen(port, () => {
-  console.log(`Server lvistening on port ${port}`);
+// Запуск сервера
+const server = app.listen(port, '0.0.0.0', () => {
+  console.log(`Server listening on port ${port}`);
 });
 
-const WebSocketServer = require('ws').Server;
-const wss = new WebSocketServer({ server });
+// WebSocket сервер
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
@@ -158,6 +154,7 @@ wss.on('connection', function connection(ws) {
       fs.writeFileSync(toolsPath, JSON.stringify(tools, null, 2));
     }
 
+    // Рассылка сообщения всем подключенным клиентам
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
@@ -165,7 +162,8 @@ wss.on('connection', function connection(ws) {
     });
   });
 
+  // Отправка начальных данных при подключении
   ws.send(JSON.stringify({ type: 'initial', payload: tools }));
 });
 
-console.log('WebSocket server is running on ws://localhost:3000');
+console.log('WebSocket server is running on ws://192.168.0.108:3000'); // Используйте IP-адрес сервера

@@ -1,6 +1,5 @@
-// requests.js
-
-export const requestsData = [
+// Тестовые данные для заявок
+let requestsData = [
     { id: 1, type: 'Материал', name: 'Сталь', quantity: 50, status: 'Pending' },
     { id: 2, type: 'Инструмент', name: 'Сверло', quantity: 20, status: 'Pending' },
     { id: 3, type: 'Материал', name: 'Алюминий', quantity: 30, status: 'Pending' },
@@ -43,7 +42,11 @@ export function initRequestsPage() {
         button.addEventListener('click', handleReceiveButtonClick);
     });
 
-    checkForPendingRequests();
+    checkForPendingRequests(); // Вызов функции проверки наличия незакрытых заявок
+
+    // Пример использования роли пользователя
+    const userRole = localStorage.getItem('userRole');
+    console.log(`User role received in initRequestsPage: ${userRole}`);
 }
 
 function handleProcessButtonClick(event) {
@@ -60,7 +63,6 @@ function handleReceiveButtonClick(event) {
     const request = requestsData.find(req => req.id == requestId);
     if (request) {
         request.status = 'Received';
-
         initRequestsPage();
     }
 }
@@ -78,9 +80,17 @@ export function checkForPendingRequests() {
     }
 }
 
-// Пример для обработки сообщений WebSocket
 export function handleWebSocketMessage(event) {
-    const newRequest = JSON.parse(event.data);
-    requestsData.push(newRequest);
-    initRequestsPage();
+    const data = JSON.parse(event.data);
+    
+    if (data.type === 'userInfo') {
+        const userRole = data.payload.role;
+        console.log(`User role received in handleWebSocketMessage: ${userRole}`);
+        localStorage.setItem('userRole', userRole);
+        initRequestsPage();
+    } else if (data.type === 'initial') {
+        // Handle initial data (if needed)
+    } else {
+        // Handle other types of messages
+    }
 }
