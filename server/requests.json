@@ -1,7 +1,30 @@
 [
-    { "id": 1, "type": "Материал", "name": "Сталь", "quantity": 50, "status": "Pending" },
-    { "id": 2, "type": "Инструмент", "name": "Сверло", "quantity": 20, "status": "Pending" },
-    { "id": 3, "type": "Материал", "name": "Алюминий", "quantity": 30, "status": "Pending" },
-    { "id": 5, "type": "Материал", "name": "Пластик", "quantity": 100, "status": "Pending" }
-  ]
-  
+  {
+    "id": 1,
+    "type": "Материал",
+    "name": "Сталь",
+    "quantity": 50,
+    "status": "Received"
+  },
+  {
+    "id": 2,
+    "type": "Инструмент",
+    "name": "Сверло",
+    "quantity": 20,
+    "status": "Waiting"
+  },
+  {
+    "id": 3,
+    "type": "Материал",
+    "name": "Алюминий",
+    "quantity": 30,
+    "status": "Pending"
+  },
+  {
+    "id": 5,
+    "type": "Материал",
+    "name": "Пластик",
+    "quantity": 100,
+    "status": "Pending"
+  }
+]

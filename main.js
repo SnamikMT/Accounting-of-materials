@@ -1,8 +1,17 @@
+// main.js
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const WebSocket = require('ws');
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+// Load environment variables
+dotenv.config();
 
 let mainWindow;
+const serverIp = process.env.SERVER_IP || 'localhost';
+const port = process.env.PORT || 3000;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -20,45 +29,43 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'client', 'login.html'));
   mainWindow.webContents.openDevTools();
 
-  // Установка заголовка CSP (если требуется)
+  // Set CSP header if needed
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': ["default-src 'self'; connect-src 'self' ws://192.168.0.16:3000 http://192.168.0.16:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"]
+        'Content-Security-Policy': [`default-src 'self'; connect-src 'self' ws://${serverIp}:${port} http://${serverIp}:${port}; script-src 'self'; style-src 'self' 'unsafe-inline';`]
       }
     });
   });
 
-  // Подключение к WebSocket серверу
-  const ws = new WebSocket('ws://192.168.0.16:3000'); // Используйте IP-адрес сервера
+  // Initialize WebSocket in the main process
+  const ws = new WebSocket.Server({ port: port });
 
-  // Обработка сообщений от WebSocket сервера
-  ws.on('message', (message) => {
-    const data = JSON.parse(message);
-    mainWindow.webContents.send(data.type, data.payload);
-  });
+  // Handle WebSocket connections
+  ws.on('connection', (ws) => {
+    console.log('WebSocket connection established');
 
-  // Отправка сообщений от клиента на WebSocket сервер
-  ipcMain.on('updateToolInfo', (event, payload) => {
-    ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
-  });
-
-  // WebSocket слушатель для роли пользователя (можно использовать, если нужно)
-  ipcMain.on('getUserRole', (event) => {
-    // Пример получения роли пользователя от WebSocket сервера
-    ws.send(JSON.stringify({ type: 'getUserInfo' }));
-    ws.on('message', (message) => {
-      const data = JSON.parse(message);
-      if (data.type === 'userInfo') {
-        event.reply('userRole', data.payload.role);
-      }
+    // Example: Handle messages from the renderer process
+    ipcMain.on('updateToolInfo', (event, payload) => {
+      ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
     });
-  });
 
-  // Обработка закрытия окна
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+    // Example: Handle sending user role to the renderer process
+    ipcMain.on('getUserRole', (event) => {
+      ws.send(JSON.stringify({ type: 'getUserInfo' }));
+      ws.on('message', (message) => {
+        const data = JSON.parse(message);
+        if (data.type === 'userInfo') {
+          event.reply('userRole', data.payload.role);
+        }
+      });
+    });
+
+    // Example: Handle closing window
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
   });
 }
 

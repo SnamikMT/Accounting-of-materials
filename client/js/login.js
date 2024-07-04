@@ -1,8 +1,22 @@
 // login.js
 
-async function checkCredentials(username, password) {
+// Загрузка конфигурационного файла
+async function loadConfig() {
   try {
-    const response = await fetch('http://192.168.0.16:3000/api/login', {
+    const response = await fetch('config.json');
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading configuration:', error);
+    return { serverIp: 'localhost', serverPort: 3000 }; // значения по умолчанию
+  }
+}
+
+async function checkCredentials(username, password) {
+  const config = await loadConfig();
+  const apiBaseUrl = `http://${config.serverIp}:${config.serverPort}/api`;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
