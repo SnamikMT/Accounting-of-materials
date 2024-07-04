@@ -20,49 +20,46 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'client', 'login.html'));
   mainWindow.webContents.openDevTools();
 
-  // Установка заголовка CSP
+  // Установка заголовка CSP (если требуется)
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': ["default-src 'self'; connect-src 'self' ws://localhost:3000 http://localhost:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"]
+        'Content-Security-Policy': ["default-src 'self'; connect-src 'self' ws://192.168.0.16:3000 http://192.168.0.16:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"]
       }
     });
   });
 
-  const server = require('./server/server');
+  // Подключение к WebSocket серверу
+  const ws = new WebSocket('ws://192.168.0.16:3000'); // Используйте IP-адрес сервера
 
-  const ws = new WebSocket('ws://localhost:3000');
+  // Обработка сообщений от WebSocket сервера
   ws.on('message', (message) => {
     const data = JSON.parse(message);
     mainWindow.webContents.send(data.type, data.payload);
   });
 
+  // Отправка сообщений от клиента на WebSocket сервер
   ipcMain.on('updateToolInfo', (event, payload) => {
     ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
   });
 
-  ipcMain.on('login', (event, { username, password }) => {
-    fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
-        mainWindow.webContents.once('did-finish-load', () => {
-          mainWindow.webContents.send('userRole', data.role);
-          console.log('User role sent to renderer:', data.role);
-        });
-      } else {
-        console.error('Invalid username or password');
+  // WebSocket слушатель для роли пользователя (можно использовать, если нужно)
+  ipcMain.on('getUserRole', (event) => {
+    // Пример получения роли пользователя от WebSocket сервера
+    ws.send(JSON.stringify({ type: 'getUserInfo' }));
+    ws.on('message', (message) => {
+      const data = JSON.parse(message);
+      if (data.type === 'userInfo') {
+        event.reply('userRole', data.payload.role);
       }
-    })
-    .catch(error => console.error('Error during login:', error));
+    });
   });
-  
+
+  // Обработка закрытия окна
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 }
 
 app.on('ready', createWindow);

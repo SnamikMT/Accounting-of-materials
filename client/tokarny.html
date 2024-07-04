@@ -3,24 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventory Management</title>
+  <title>Токарный</title>
+  <style>
+    /* Add your CSS styles here or link an external stylesheet */
+    .category {
+      margin-top: 20px;
+    }
+    /* Example CSS styles */
+    .subcategory {
+      margin-top: 10px;
+    }
+  </style>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
+  <!-- Your HTML content starts here -->
   <div class="container">
-    <header>
-      <div class="header-left">
-        <h1 class="header-title">Inventory Management</h1>
-      </div>
-      <div class="menu">
-        <button id="materials" class="menu-button">Материалы</button>
-        <button id="tools" class="menu-button">Инструменты</button>
-        <button id="requests" class="menu-button">Запросы</button>
-      </div>
-      <button id="logout" class="logout-button">Выход</button>
-    </header>
-
-    <div id="toolCategories" class="category" style="display:none;">
+    <div id="toolCategories" class="category">
       <h2>Категории инструментов</h2>
       <ul class="categories-grid">
         <li id="tokarny" class="subcategory">Токарный</li>
@@ -33,8 +32,8 @@
       </ul>
     </div>
 
-    <div id="subcategories" style="display:none;">
-      <div id="tokarnySubcategories" style="display:none;">
+    <div id="subcategories" class="subcategory">
+      <div id="tokarnySubcategories">
         <h2>Подкатегория</h2>
         <ul class="subcategory-list">
           <li id="rezcy" class="subcategory-item">Резцы</li>
@@ -43,7 +42,7 @@
       </div>
     </div>
 
-    <div id="sizeSelection" class="subcategory" style="display:none;">
+    <div id="sizeSelection" class="subcategory">
       <h2>Выбор Сечения</h2>
       <ul class="sechenie" style="padding: 0;">
         <li class="size-option" data-size="25x25">25x25</li>
@@ -52,12 +51,12 @@
       </ul>
     </div>
 
-    <div id="toolDetails" class="subcategory" style="display:none;">
+    <div id="toolDetails" class="subcategory">
       <h2 id="toolTitle">Подразделение инструмента</h2>
       <ul id="toolList" style="padding: 0; cursor: pointer;"></ul>
     </div>
 
-    <div id="shapeSelection" class="subcategory" style="display:none;">
+    <div id="shapeSelection" class="subcategory">
       <h2>Выбор Формы</h2>
       <ul class="forms" style="padding: 0;">
         <li class="shape-option" data-shape="Круглые">Круглые</li>
@@ -67,7 +66,7 @@
       </ul>
     </div>
 
-    <div id="angleSelection" class="subcategory" style="display:none;">
+    <div id="angleSelection" class="subcategory">
       <h2>Выбор Угла</h2>
       <ul class="triangle" style="padding: 0;">
         <li class="angle-option" data-angle="80°">80°</li>
@@ -76,7 +75,7 @@
       </ul>
     </div>
 
-    <div id="availability" class="subcategory" style="display:none;">
+    <div id="availability" class="subcategory">
       <h2>Склад</h2>
       <table class="styled-table">
         <thead>
@@ -89,7 +88,7 @@
       </table>
     </div>
 
-    <form id="addToolForm" class="subcategoryAdd" style="display:none;">
+    <form id="addToolForm" class="subcategoryAdd">
       <h2>Добавить инструмент</h2>
       <label for="toolName">Наименование инструмента:</label>
       <input type="text" id="toolName" required>
@@ -100,12 +99,7 @@
   </div>
 
   <div id="contentContainer">
-    <!-- Другие разделы здесь... -->
-    <!-- Контент для динамической загрузки -->
+    <!-- Other sections or dynamic content can be placed here -->
   </div>
-  
-  
-  <script type="module" src="./js/renderer.js"></script>
-  <script type="module" src="./js/tokarny.js"></script>
 </body>
 </html>
