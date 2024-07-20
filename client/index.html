@@ -20,91 +20,17 @@
       <button id="logout" class="logout-button">Выход</button>
     </header>
 
-    <div id="toolCategories" class="category" style="display:none;">
-      <h2>Категории инструментов</h2>
-      <ul class="categories-grid">
-        <li id="tokarny" class="subcategory">Токарный</li>
-        <li id="frezerny" class="subcategory">Фрезерный</li>
-        <li id="slesarny" class="subcategory">Слесарный</li>
-        <li id="sverlilny" class="subcategory">Сверлильный</li>
-        <li id="masla" class="subcategory">Масла</li>
-        <li id="sozhi" class="subcategory">СОЖи</li>
-        <li id="hozInst" class="subcategory">Хоз.Инстр</li>
-      </ul>
+    <!-- Requests Section -->
+    <div id="requestsSection" class="section" style="display:none;">
+      <!-- Add your requests section content here -->
     </div>
-
-    <div id="subcategories" style="display:none;">
-      <div id="tokarnySubcategories" style="display:none;">
-        <h2>Подкатегория</h2>
-        <ul class="subcategory-list">
-          <li id="rezcy" class="subcategory-item">Резцы</li>
-          <li id="plastiny" class="subcategory-item">Пластины</li>
-        </ul>
-      </div>
-    </div>
-
-    <div id="sizeSelection" class="subcategory" style="display:none;">
-      <h2>Выбор Сечения</h2>
-      <ul class="sechenie" style="padding: 0;">
-        <li class="size-option" data-size="25x25">25x25</li>
-        <li class="size-option" data-size="16x16">16x16</li>
-        <li class="size-option" data-size="12x12">12x12</li>
-      </ul>
-    </div>
-
-    <div id="toolDetails" class="subcategory" style="display:none;">
-      <h2 id="toolTitle">Подразделение инструмента</h2>
-      <ul id="toolList" style="padding: 0; cursor: pointer;"></ul>
-    </div>
-
-    <div id="shapeSelection" class="subcategory" style="display:none;">
-      <h2>Выбор Формы</h2>
-      <ul class="forms" style="padding: 0;">
-        <li class="shape-option" data-shape="Круглые">Круглые</li>
-        <li class="shape-option" data-shape="Ромбические">Ромбические</li>
-        <li class="shape-option" data-shape="Квадратные">Квадратные</li>
-        <li class="shape-option" data-shape="Треугольные">Треугольные</li>
-      </ul>
-    </div>
-
-    <div id="angleSelection" class="subcategory" style="display:none;">
-      <h2>Выбор Угла</h2>
-      <ul class="triangle" style="padding: 0;">
-        <li class="angle-option" data-angle="80°">80°</li>
-        <li class="angle-option" data-angle="55°">55°</li>
-        <li class="angle-option" data-angle="35°">35°</li>
-      </ul>
-    </div>
-
-    <div id="availability" class="subcategory" style="display:none;">
-      <h2>Склад</h2>
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>Наименование</th>
-            <th>Количество</th>
-          </tr>
-        </thead>
-        <tbody id="availabilityTable"></tbody>
-      </table>
-    </div>
-
-    <form id="addToolForm" class="subcategoryAdd" style="display:none;">
-      <h2>Добавить инструмент</h2>
-      <label for="toolName">Наименование инструмента:</label>
-      <input type="text" id="toolName" required>
-      <label for="toolQuantity">Количество:</label>
-      <input type="number" id="toolQuantity" required>
-      <button type="submit" class="AddButton">Добавить</button>
-    </form>
   </div>
 
   <div id="contentContainer">
     <!-- Другие разделы здесь... -->
     <!-- Контент для динамической загрузки -->
   </div>
-  
-  
+
   <script type="module" src="./js/renderer.js"></script>
   <script type="module" src="./js/tokarny.js"></script>
 </body>

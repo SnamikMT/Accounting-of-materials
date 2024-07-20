@@ -1,19 +1,21 @@
-// requests.js
-
 import { initializeWebSocket, sendWebSocketMessage, getWebSocketServerUrl } from './websocket.js';
 
 let requestsData = [];
+let isRequestsSectionOpen = false; // Флаг для отслеживания, открыт ли раздел "Запросы"
 
+// Загрузка данных о запросах с сервера
 async function loadRequestsData() {
   try {
-    const response = await fetch('http://192.168.0.108:3000/api/requests'); // Using fetch API for HTTP requests
+    const response = await fetch('http://192.168.0.108:3000/api/requests');
     requestsData = await response.json();
     console.log('Requests data loaded:', requestsData);
+    checkForPendingRequests();
   } catch (error) {
     console.error('Error loading requests data:', error);
   }
 }
 
+// Инициализация страницы запросов
 export async function initRequestsPage(userRole) {
   await loadRequestsData();
 
@@ -37,6 +39,7 @@ export async function initRequestsPage(userRole) {
       <div class="buttons">
         ${request.status === 'Pending' ? `<button class="process-button" data-id="${request.id}">Process</button>` : ''}
         ${request.status === 'Waiting' ? `<button class="receive-button" data-id="${request.id}">Receive</button>` : ''}
+        ${request.status !== 'Pending' ? `<button class="revert-button" data-id="${request.id}">← Back</button>` : ''}
         ${request.status === 'Received' ? `<span>Received</span>` : ''}
       </div>
     `;
@@ -57,11 +60,16 @@ export async function initRequestsPage(userRole) {
     button.addEventListener('click', handleReceiveButtonClick);
   });
 
+  document.querySelectorAll('.revert-button').forEach(button => {
+    button.addEventListener('click', handleRevertButtonClick);
+  });
+
   checkForPendingRequests();
 
   console.log(`Current user role in initRequestsPage: ${userRole}`);
 }
 
+// Обработчик для кнопки "Process"
 async function handleProcessButtonClick(event) {
   const requestId = event.target.getAttribute('data-id');
   const request = requestsData.find(req => req.id == requestId);
@@ -72,6 +80,7 @@ async function handleProcessButtonClick(event) {
   }
 }
 
+// Обработчик для кнопки "Receive"
 async function handleReceiveButtonClick(event) {
   const requestId = event.target.getAttribute('data-id');
   const request = requestsData.find(req => req.id == requestId);
@@ -82,6 +91,30 @@ async function handleReceiveButtonClick(event) {
   }
 }
 
+// Обработчик для кнопки "← Back"
+async function handleRevertButtonClick(event) {
+  const requestId = event.target.getAttribute('data-id');
+  const request = requestsData.find(req => req.id == requestId);
+  if (request) {
+    const confirmed = confirm(`Вы уверены, что хотите изменить статус запроса для ${request.name}?`);
+    if (!confirmed) return;
+
+    let previousStatus;
+    if (request.status === 'Waiting') {
+      previousStatus = 'Pending';
+    } else if (request.status === 'Received') {
+      previousStatus = 'Waiting';
+    }
+
+    if (previousStatus) {
+      request.status = previousStatus;
+      await updateRequestStatusOnServer(requestId, previousStatus);
+      await initRequestsPage('user');
+    }
+  }
+}
+
+// Обновление статуса запроса на сервере
 async function updateRequestStatusOnServer(requestId, newStatus) {
   try {
     const response = await fetch('http://192.168.0.108:3000/api/requests/update', {
@@ -90,7 +123,7 @@ async function updateRequestStatusOnServer(requestId, newStatus) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ id: requestId, status: newStatus }),
-    });    
+    });
 
     if (!response.ok) {
       console.error('Failed to update request status:', response.statusText);
@@ -108,15 +141,35 @@ async function updateRequestStatusOnServer(requestId, newStatus) {
   }
 }
 
+// Проверка наличия заявок со статусом "Pending"
 export function checkForPendingRequests() {
   const requestsButton = document.getElementById('requests');
-  const hasPendingMaterialRequests = requestsData.some(
-    request => request.type === 'Material' && (request.status === 'Pending' || request.status === 'Waiting')
+  const hasPendingRequests = requestsData.some(
+    request => request.status === 'Pending'
   );
 
-  if (hasPendingMaterialRequests) {
+  if (hasPendingRequests && !isRequestsSectionOpen) {
     requestsButton.classList.add('blinking');
   } else {
     requestsButton.classList.remove('blinking');
   }
 }
+
+// Вызов функции checkForPendingRequests при загрузке страницы
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadRequestsData();
+  checkForPendingRequests();
+
+  // Обработчик для кнопки "Запросы"
+  const requestsButton = document.getElementById('requests');
+  requestsButton.addEventListener('click', () => {
+    isRequestsSectionOpen = true;
+    requestsButton.classList.remove('blinking'); // Останавливаем мигание после нажатия
+  });
+  
+  // Дополнительно: периодически проверяем наличие заявок (например, каждые 10 секунд)
+  setInterval(async () => {
+    await loadRequestsData();
+    checkForPendingRequests();
+  }, 10000);
+});

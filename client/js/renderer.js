@@ -1,6 +1,6 @@
 // renderer.js
 
-import { initializeWebSocket } from './websocket.js';  // Correct import statement
+import { initializeWebSocket } from './websocket.js';
 import { initRequestsPage } from './requests.js';
 import { setupEventListeners } from './tokarny.js';
 
@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   toolsButton.addEventListener('click', async () => {
     hideAllSections();
     await loadToolsHtml();
-    setupEventListeners();
   });
 
   logoutButton.addEventListener('click', () => {
@@ -54,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       contentContainer.innerHTML = htmlContent;
       console.log('HTML loaded: ', contentContainer.innerHTML);
       initRequestsPage(currentUserRole);
+      document.getElementById('requestsSection').style.display = 'block';
     } catch (error) {
       console.error('Error loading requests.html:', error);
     }
@@ -61,7 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadToolsHtml() {
     try {
-      console.log('Loading tools.html content...');
+      const response = await fetch('./tools.html');
+      const htmlContent = await response.text();
+      contentContainer.innerHTML = htmlContent;
+      console.log('HTML loaded: ', contentContainer.innerHTML);
+      document.getElementById('toolCategories').style.display = 'block';
+      setupEventListeners();
     } catch (error) {
       console.error('Error loading tools.html:', error);
     }
@@ -72,5 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
       section.style.display = 'none';
     });
+
+    // Also hide specific elements that are dynamically loaded
+    if (document.getElementById('toolCategories')) {
+      document.getElementById('toolCategories').style.display = 'none';
+    }
+    if (document.getElementById('requestsSection')) {
+      document.getElementById('requestsSection').style.display = 'none';
+    }
   }
 });
