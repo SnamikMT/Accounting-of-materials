@@ -1,88 +1,69 @@
 // tokarny.js
 
-function setupEventListeners() {
-    const toolCategories = document.getElementById('toolCategories');
-    const subcategories = document.getElementById('subcategories');
-    const sizeSelection = document.getElementById('sizeSelection');
-    const toolDetails = document.getElementById('toolDetails');
-    const shapeSelection = document.getElementById('shapeSelection');
-    const angleSelection = document.getElementById('angleSelection');
-    const availability = document.getElementById('availability');
-    const addToolForm = document.getElementById('addToolForm');
-  
-    if (!toolCategories) {
-      console.error('Tool categories section not found!');
-      return;
+// Функция для загрузки данных из tools.json
+async function loadToolsData() {
+  const response = await fetch('./tools.json');
+  const data = await response.json();
+  return data;
+}
+
+// Функция для сохранения данных в tools.json
+async function saveToolsData(data) {
+  await fetch('./tools.json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+}
+
+// Функция для инициализации страницы инструментов
+export function setupEventListeners() {
+  const editCategoriesButton = document.getElementById('editCategoriesButton');
+  const subcategoryEditor = document.getElementById('subcategoryEditor');
+  const categoriesGrid = document.getElementById('categoriesGrid');
+  const addSubcategoryButton = document.getElementById('addSubcategoryButton');
+  let toolsData = {};
+
+  // Загрузить данные инструментов при инициализации
+  loadToolsData().then(data => {
+    toolsData = data;
+  });
+
+  editCategoriesButton.addEventListener('click', () => {
+    subcategoryEditor.style.display = 'block';
+    renderSubcategoryEditor('tokarny'); // Выберите нужную категорию для редактирования
+  });
+
+  addSubcategoryButton.addEventListener('click', () => {
+    const newSubcategoryName = prompt('Введите название новой подкатегории:');
+    if (newSubcategoryName) {
+      toolsData.tokarny[newSubcategoryName] = {}; // Добавить новую подкатегорию
+      renderSubcategoryEditor('tokarny'); // Перерисовать редактор
+      saveToolsData(toolsData); // Сохранить данные
     }
-  
-    // Setup category event listeners
-    toolCategories.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('subcategory')) {
-        hideAllSubsections();
-        if (target.id === 'tokarny') {
-          document.getElementById('tokarnySubcategories').style.display = 'block';
-        }
-      }
+  });
+}
+
+// Функция для рендеринга редактора подкатегорий
+function renderSubcategoryEditor(category) {
+  const subcategoryList = document.getElementById('subcategoryList');
+  subcategoryList.innerHTML = '';
+
+  for (const subcategory in toolsData[category]) {
+    const subcategoryElement = document.createElement('div');
+    subcategoryElement.textContent = subcategory;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Удалить';
+    deleteButton.addEventListener('click', () => {
+      delete toolsData[category][subcategory]; // Удалить подкатегорию
+      renderSubcategoryEditor(category); // Перерисовать редактор
+      saveToolsData(toolsData); // Сохранить данные
     });
-  
-    // Setup subcategory event listeners
-    subcategories.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('subcategory-item')) {
-        hideAllSubsections();
-        sizeSelection.style.display = 'block';
-      }
-    });
-  
-    // Setup size option event listeners
-    sizeSelection.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('size-option')) {
-        hideAllSubsections();
-        shapeSelection.style.display = 'block';
-      }
-    });
-  
-    // Setup shape option event listeners
-    shapeSelection.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('shape-option')) {
-        hideAllSubsections();
-        angleSelection.style.display = 'block';
-      }
-    });
-  
-    // Setup angle option event listeners
-    angleSelection.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('angle-option')) {
-        hideAllSubsections();
-        availability.style.display = 'block';
-      }
-    });
-  
-    // Setup tool details event listeners
-    toolDetails.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target.classList.contains('tool-item')) {
-        // Display tool details here
-      }
-    });
-  
-    // Setup form submission event listeners
-    addToolForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      // Handle form submission here
-    });
-  
-    function hideAllSubsections() {
-      const sections = [subcategories, sizeSelection, toolDetails, shapeSelection, angleSelection, availability, addToolForm];
-      sections.forEach(section => {
-        section.style.display = 'none';
-      });
-    }
+
+    subcategoryElement.appendChild(deleteButton);
+    subcategoryList.appendChild(subcategoryElement);
   }
-  
-  export { setupEventListeners };
-  
+}

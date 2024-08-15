@@ -4,14 +4,14 @@
     "type": "Материал",
     "name": "Сталь",
     "quantity": 50,
-    "status": "Waiting"
+    "status": "Received"
   },
   {
     "id": 2,
     "type": "Инструмент",
     "name": "Сверло",
     "quantity": 20,
-    "status": "Received"
+    "status": "Waiting"
   },
   {
     "id": 3,

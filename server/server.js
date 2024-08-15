@@ -16,16 +16,43 @@ const serverIp = process.env.SERVER_IP || 'localhost';
 
 const usersFilePath = path.join(__dirname, 'users.json');
 const requestsFilePath = path.join(__dirname, 'requests.json');
+const toolsFilePath = path.join(__dirname, 'tools.json');
 
 app.use(bodyParser.json());
 app.use(cors());
 app.use(helmet());
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, '../client')));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Установка CSP заголовка
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', `connect-src 'self' ws://${serverIp}:${port} http://${serverIp}:${port}; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';`);
   next();
+});
+
+// Маршрут для получения данных tools.json
+app.get('/tools.json', (req, res) => {
+  fs.readFile(toolsFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading tools.json:', err);
+      res.status(500).send('Error reading data');
+      return;
+    }
+    res.send(data);
+  });
+});
+
+// Маршрут для сохранения данных в tools.json
+app.post('/tools.json', (req, res) => {
+  const newData = req.body;
+  fs.writeFile(toolsFilePath, JSON.stringify(newData, null, 2), (err) => {
+    if (err) {
+      console.error('Error saving tools.json:', err);
+      return res.status(500).send('Error saving data');
+    }
+    res.send('Data saved successfully');
+  });
 });
 
 // API методы
@@ -39,7 +66,6 @@ app.get('/api/users', (req, res) => {
   }
 });
 
-// Логика для обработки POST /api/login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   console.log(`Received login request for username: ${username}, password: ${password}`);
@@ -61,7 +87,6 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// API для получения всех заявок
 app.get('/api/requests', (req, res) => {
   try {
     const requests = JSON.parse(fs.readFileSync(requestsFilePath, 'utf8'));
@@ -113,8 +138,6 @@ app.post('/api/requests/update', (req, res) => {
   });
 });
 
-
-// Запуск сервера Express
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Server listening on port ${port}`);
 });
@@ -125,16 +148,13 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
     console.log('Received:', message);
     
-    // Пример обработки полученного сообщения
     const parsedMessage = JSON.parse(message);
     if (parsedMessage.type === 'getUserInfo') {
-      const userInfo = { type: 'userInfo', payload: { role: 'Admin' } }; // Пример ответа с информацией о пользователе
+      const userInfo = { type: 'userInfo', payload: { role: 'Admin' } };
       ws.send(JSON.stringify(userInfo));
     }
   });
 
-  // Отправляем корректный JSON при подключении
   const welcomeMessage = JSON.stringify({ message: 'Welcome to the WebSocket server!' });
   ws.send(welcomeMessage);
 });
-
