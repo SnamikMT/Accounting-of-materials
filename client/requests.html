@@ -43,46 +43,180 @@
     }
 
     .request-list li {
-      background-color: #535353;
+      background-color: #fff;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .request-list li .details {
       margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      color: #fff;
+    }
+
+    .request-list li .details .label {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .request-list li .details .quantity {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .request-list li .details .date {
+      color: #6c757d;
+      background-color: #e9ecef;
+      padding: 5px;
+      border-radius: 3px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 5px;
     }
 
     .request-list li .buttons {
       display: flex;
       justify-content: space-between;
-      margin-top: 10px;
+      gap: 10px;
     }
 
     .request-list li .buttons button {
-      padding: 5px 10px;
+      padding: 8px 15px;
       border: none;
-      border-radius: 3px;
+      border-radius: 5px;
       cursor: pointer;
+      font-size: 14px;
+      color: #fff;
     }
 
-    .process-button {
+    /* Стили для формы удаления записей */
+    .form-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .form-container input[type="date"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin: 0 10px;
+      font-size: 16px;
+    }
+
+    .form-container button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
       background-color: #007bff;
       color: #fff;
+      font-size: 16px;
     }
 
-    .receive-button {
-      background-color: #28a745;
-      color: #fff;
-    }
+    /* Основные стили для списка запросов */
+.request-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
-    @keyframes blink {
-      0% { background-color: red; }
-      50% { background-color: transparent; }
-      100% { background-color: red; }
-    }
+.request-list li {
+  background-color: #fff;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  position: relative;
+}
 
-    .blinking {
-      animation: blink 1s infinite;
-    }
+/* Основные стили для списка запросов */
+.request-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.request-list li {
+  background-color: #fff;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Контейнер для текста */
+.request-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Стили для отдельных частей текста */
+.request-text .type {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.request-text .quantity {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.request-text .date {
+  background-color: #f1f1f1;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+/* Стили для кнопок */
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.buttons button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #fff;
+}
+
+.process-button {
+  background-color: #202836;
+}
+
+.receive-button {
+  background-color: #28a745;
+}
+
+.revert-button {
+  background-color: #202836;
+}
+
+.delete-button {
+  background-color: #dc3545;
+}
+
+.buttons span {
+  font-weight: bold;
+  color: #28a745;
+}
+
+
   </style>
 </head>
 <body>
@@ -102,8 +236,14 @@
         <ul id="receivedList" class="request-list"></ul>
       </div>
     </div>
+
+    <div class="form-container">
+      <input type="date" id="delete-from-date" placeholder="От" />
+      <input type="date" id="delete-to-date" placeholder="До" />
+      <button id="delete-by-period-button">Удалить записи за период</button>
+    </div>
   </div>
-  
+
   <script src="./js/renderer.js"></script>
 </body>
 </html>

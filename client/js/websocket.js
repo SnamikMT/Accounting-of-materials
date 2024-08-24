@@ -28,11 +28,19 @@ export async function initializeWebSocket(onMessageCallback) {
 
   ws.onmessage = (event) => {
     console.log('WebSocket message received:', event.data);
-    const data = JSON.parse(event.data);
-    if (onMessageCallback) {
-      onMessageCallback(data);
+  
+    // Попробуем распарсить сообщение как JSON
+    try {
+      const data = JSON.parse(event.data);
+      if (onMessageCallback) {
+        onMessageCallback(data);
+      }
+    } catch (error) {
+      console.warn('Received a non-JSON message:', event.data);
+      // Здесь можно добавить обработку сообщений, которые не являются JSON
     }
   };
+  
 
   ws.onclose = () => {
     console.log('WebSocket connection closed');

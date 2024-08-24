@@ -40,10 +40,10 @@ function createWindow() {
   });
 
   // Initialize WebSocket in the main process
-  const ws = new WebSocket.Server({ port: port });
+  const wss = new WebSocket.Server({ port: port });
 
   // Handle WebSocket connections
-  ws.on('connection', (ws) => {
+  wss.on('connection', (ws) => {
     console.log('WebSocket connection established');
 
     // Example: Handle messages from the renderer process
@@ -55,9 +55,14 @@ function createWindow() {
     ipcMain.on('getUserRole', (event) => {
       ws.send(JSON.stringify({ type: 'getUserInfo' }));
       ws.on('message', (message) => {
-        const data = JSON.parse(message);
-        if (data.type === 'userInfo') {
-          event.reply('userRole', data.payload.role);
+        try {
+          const data = JSON.parse(message);
+          if (data.type === 'userInfo') {
+            event.reply('userRole', data.payload.role);
+          }
+        } catch (error) {
+          console.error('Error parsing message as JSON:', error);
+          console.log('Received non-JSON message:', message);
         }
       });
     });
