@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const serverIp = process.env.SERVER_IP || 'localhost';
+const serverIp = process.env.SERVER_IP || '0.0.0.0';  // Можно использовать 'localhost' для локальной разработки
 
 const usersFilePath = path.join(__dirname, 'users.json');
 const requestsFilePath = path.join(__dirname, 'requests.json');
@@ -397,9 +397,9 @@ app.post('/api/requests/delete', (req, res) => {
 });
 
 
-// WebSocket сервер на том же порту
-const server = app.listen(port, () => {
-  console.log(`Server is running on http://${serverIp}:${port}`);
+// Запуск сервера
+const server = app.listen(port, serverIp, () => {
+  console.log(`Server running at http://${serverIp}:${port}`);
 });
 
 const wss = new WebSocket.Server({ server });
@@ -407,17 +407,11 @@ const wss = new WebSocket.Server({ server });
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  // Отправляем сообщение клиенту при подключении
-  ws.send('Welcome to the WebSocket server!');
-
-  // Обработка сообщений от клиента
   ws.on('message', (message) => {
     console.log(`Received message: ${message}`);
-    // Отправляем обратно подтверждение
     ws.send(`Server received: ${message}`);
   });
 
-  // Обработка отключения клиента
   ws.on('close', () => {
     console.log('Client disconnected');
   });

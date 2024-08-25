@@ -1,5 +1,3 @@
-// websocket.js
-
 let ws;
 let serverUrl;
 
@@ -12,13 +10,17 @@ async function loadConfig() {
     console.log('Loaded WebSocket server URL:', serverUrl);
   } catch (error) {
     console.error('Error loading configuration:', error);
-    serverUrl = 'ws://localhost:3000';
+    serverUrl = 'ws://localhost:3000'; // Fallback URL
   }
 }
 
 // Function to initialize WebSocket connection
 export async function initializeWebSocket(onMessageCallback) {
   await loadConfig();
+
+  if (ws) {
+    ws.close();
+  }
 
   ws = new WebSocket(serverUrl);
 
@@ -28,8 +30,6 @@ export async function initializeWebSocket(onMessageCallback) {
 
   ws.onmessage = (event) => {
     console.log('WebSocket message received:', event.data);
-  
-    // Попробуем распарсить сообщение как JSON
     try {
       const data = JSON.parse(event.data);
       if (onMessageCallback) {
@@ -37,13 +37,13 @@ export async function initializeWebSocket(onMessageCallback) {
       }
     } catch (error) {
       console.warn('Received a non-JSON message:', event.data);
-      // Здесь можно добавить обработку сообщений, которые не являются JSON
     }
   };
-  
 
   ws.onclose = () => {
     console.log('WebSocket connection closed');
+    // Attempt to reconnect
+    setTimeout(() => initializeWebSocket(onMessageCallback), 5000);
   };
 
   ws.onerror = (error) => {
@@ -64,4 +64,12 @@ export function sendWebSocketMessage(message) {
 // Function to get WebSocket server URL
 export function getWebSocketServerUrl() {
   return serverUrl;
+}
+
+// Function to close WebSocket connection
+export function closeWebSocket() {
+  if (ws) {
+    ws.close();
+    console.log('WebSocket connection closed manually');
+  }
 }

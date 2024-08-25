@@ -1,12 +1,9 @@
-// main.js
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const WebSocket = require('ws');
 const dotenv = require('dotenv');
-const fs = require('fs');
 
-// Load environment variables
+// Загрузка переменных окружения из .env файла
 dotenv.config();
 
 let mainWindow;
@@ -29,57 +26,62 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'client', 'login.html'));
   mainWindow.webContents.openDevTools();
 
-  // Set CSP header if needed
+  // Set CSP header
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': [`default-src 'self'; connect-src 'self' ws://${serverIp}:${port} http://${serverIp}:${port}; script-src 'self'; style-src 'self' 'unsafe-inline';`]
-      }
-    });
+    const headers = details.responseHeaders;
+    headers['Content-Security-Policy'] = [
+      "default-src 'self'; " +
+      "connect-src 'self' ws://localhost:3000 http://localhost:3000; " +
+      "script-src 'self'; " +
+      "style-src 'self' 'unsafe-inline';"
+    ];
+    callback({ responseHeaders: headers });
   });
 
-  // Initialize WebSocket in the main process
-  const wss = new WebSocket.Server({ port: port });
 
-  // Handle WebSocket connections
-  wss.on('connection', (ws) => {
-    console.log('WebSocket connection established');
+  const ws = new WebSocket(`ws://${serverIp}:${port}`);
 
-    // Example: Handle messages from the renderer process
-    ipcMain.on('updateToolInfo', (event, payload) => {
-      ws.send(JSON.stringify({ type: 'updateToolInfo', payload }));
-    });
+  ws.on('open', () => {
+    console.log('Connected to WebSocket server');
+    ws.send('Hello from Electron client!');
+  });
 
-    // Example: Handle sending user role to the renderer process
-    ipcMain.on('getUserRole', (event) => {
-      ws.send(JSON.stringify({ type: 'getUserInfo' }));
-      ws.on('message', (message) => {
-        try {
-          const data = JSON.parse(message);
-          if (data.type === 'userInfo') {
-            event.reply('userRole', data.payload.role);
-          }
-        } catch (error) {
-          console.error('Error parsing message as JSON:', error);
-          console.log('Received non-JSON message:', message);
-        }
-      });
-    });
+  ws.on('message', (message) => {
+    console.log(`Received from server: ${message}`);
+  });
 
-    // Example: Handle closing window
-    mainWindow.on('closed', () => {
-      mainWindow = null;
-    });
+  ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
+
+  ipcMain.on('sendMessage', (event, message) => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(message);
+    }
+  });
+
+  ipcMain.on('closeConnection', () => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.close();
+    }
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.close();
+    }
   });
 }
 
 app.on('ready', createWindow);
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
+
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();

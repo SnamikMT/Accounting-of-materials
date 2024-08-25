@@ -24,7 +24,7 @@
     "id": 1724145045023,
     "name": "quantities",
     "quantity": 10,
-    "timestamp": "2024-08-23T22:10:05.081Z",
+    "timestamp": "2024-08-25T21:24:57.000Z",
     "status": "Received"
   },
   {
@@ -38,7 +38,7 @@
     "id": 1724357460253,
     "name": "Fall",
     "quantity": 321,
-    "timestamp": "2024-08-23T22:10:08.718Z",
+    "timestamp": "2024-08-25T21:24:59.294Z",
     "status": "Waiting"
   }
 ]

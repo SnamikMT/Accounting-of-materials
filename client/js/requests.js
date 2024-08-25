@@ -1,4 +1,4 @@
-import { initializeWebSocket, sendWebSocketMessage, getWebSocketServerUrl } from './websocket.js';
+import { initializeWebSocket, sendWebSocketMessage } from './websocket.js';
 
 let requestsData = [];
 let isRequestsSectionOpen = false; // Флаг для отслеживания, открыт ли раздел "Запросы"
@@ -18,7 +18,6 @@ async function loadConfig() {
     return null;
   }
 }
-
 
 // Загрузка данных о запросах с сервера
 async function loadRequestsData() {

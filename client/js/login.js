@@ -1,6 +1,3 @@
-// login.js
-
-// Загрузка конфигурационного файла
 async function loadConfig() {
   try {
     const response = await fetch('config.json');
@@ -36,6 +33,7 @@ async function checkCredentials(username, password) {
   }
 }
 
+
 async function handleSubmit(event) {
   event.preventDefault();
 
@@ -52,11 +50,8 @@ async function handleSubmit(event) {
   const result = await checkCredentials(username, password);
 
   if (result.isValid) {
-    // Сохраняем роль пользователя в localStorage
     localStorage.setItem('userRole', result.role);
     console.log('Role saved to localStorage:', result.role);
-
-    // Перенаправляем пользователя на главную страницу
     window.location.replace('index.html');
   } else {
     errorMessage.textContent = 'Invalid username or password';
@@ -64,5 +59,4 @@ async function handleSubmit(event) {
   }
 }
 
-// Назначаем обработчик на форму входа
 document.getElementById('loginForm').addEventListener('submit', handleSubmit);

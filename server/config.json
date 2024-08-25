@@ -1,4 +1,4 @@
 {
-  "serverIp": "192.168.0.108",
+  "serverIp": "0.0.0.0",
   "serverPort": "3000"
 }
