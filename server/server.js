@@ -10,15 +10,20 @@ const dotenv = require('dotenv');
 // Загрузка переменных окружения из .env файла
 dotenv.config();
 
-
 const app = express();
 const port = process.env.PORT || 3000;
 const serverIp = process.env.SERVER_IP || '0.0.0.0';  // Можно использовать 'localhost' для локальной разработки
 
-const usersFilePath = path.join(__dirname, 'users.json');
-const requestsFilePath = path.join(__dirname, 'requests.json');
-const toolsFilePath = path.join(__dirname, 'tools.json');
-const materialsFilePath = path.join(__dirname, 'materials.json');
+// Определение путей к файлам данных
+const writableDir = path.join(process.cwd(), 'data');
+if (!fs.existsSync(writableDir)) {
+  fs.mkdirSync(writableDir, { recursive: true });
+}
+
+const usersFilePath = path.join(writableDir, 'users.json');
+const requestsFilePath = path.join(writableDir, 'requests.json');
+const toolsFilePath = path.join(writableDir, 'tools.json');
+const materialsFilePath = path.join(writableDir, 'materials.json');
 
 
 app.use(bodyParser.json());
@@ -40,12 +45,9 @@ const config = {
 };
 
 // Запись конфигурации в config.json
-fs.writeFileSync(
-  path.join(__dirname, 'config.json'),
-  JSON.stringify(config, null, 2)
-);
-
-console.log('Configuration saved to config.json');
+const configPath = path.join(writableDir, 'config.json');
+fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+console.log('Configuration saved to', configPath);
 
 // Пример использования updateHierarchicalData (описан ранее)
 function updateHierarchicalData(obj, keys, quantity) {
@@ -322,7 +324,7 @@ app.get('/requests.json', (req, res) => {
 
 app.delete('/api/requests/:id', (req, res) => {
   const requestId = parseInt(req.params.id, 10); // Преобразуем ID в число
-  const requestsFilePath = path.join(__dirname, 'requests.json');
+  const requestsFilePath = path.join(writableDir, 'requests.json'); // Используйте путь к внешней директории
 
   fs.readFile(requestsFilePath, 'utf8', (err, data) => {
     if (err) {
@@ -356,7 +358,8 @@ app.post('/api/requests/delete', (req, res) => {
   const { from, to } = req.body;
   console.log(`Запрос на удаление записей с ${from} по ${to}`);
 
-  const requestsFilePath = path.join(__dirname, 'requests.json');
+  // Используем путь для записи данных вне упакованного приложения
+  const requestsFilePath = path.join(writableDir, 'requests.json');
 
   // Чтение содержимого файла requests.json
   fs.readFile(requestsFilePath, 'utf8', (err, data) => {

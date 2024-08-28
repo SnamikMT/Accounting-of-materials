@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             addTableButton.style.display = 'none';
         
             if (categoryPath.length > 0) {
-                subcategoryList.innerHTML = '<li id="backButton" class="button">Back</li>';
+                subcategoryList.innerHTML = '<button id="backButton" class="button">Назад</button>';
             } else {
                 subcategoryList.innerHTML = '';
             }

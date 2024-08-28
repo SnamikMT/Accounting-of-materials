@@ -75,6 +75,13 @@ export async function initRequestsPage(userRole) {
       const fromTimestamp = new Date(fromDate).toISOString();
       const toTimestamp = new Date(toDate).toISOString();
   
+      // Загружаем конфигурацию
+      const config = await loadConfig();
+      if (!config) {
+          console.error('Не удалось загрузить конфигурацию.');
+          return;
+      }
+  
       console.log('Отправка данных на сервер:', { from: fromTimestamp, to: toTimestamp });
   
       try {
@@ -103,8 +110,7 @@ export async function initRequestsPage(userRole) {
           console.error('Ошибка при удалении записей:', error);
           alert('Произошла ошибка при удалении записей.');
       }
-  });
-  
+  });  
 
 
   await loadRequestsData();
@@ -184,7 +190,6 @@ export async function initRequestsPage(userRole) {
 }
 
 async function handleDeleteButtonClick(event) {
-
   const config = await loadConfig();
   if (!config) return;
 
@@ -218,6 +223,7 @@ async function handleDeleteButtonClick(event) {
 }
 
 
+
 // Обработчик для кнопки "Process"
 async function handleProcessButtonClick(event) {
   const requestId = event.target.getAttribute('data-id');
@@ -227,7 +233,8 @@ async function handleProcessButtonClick(event) {
     request.timestamp = new Date().toISOString(); // Обновляем timestamp
     await updateRequestStatusOnServer(requestId, 'Waiting', request.timestamp);
 
-    await initRequestsPage('user');
+    await initRequestsPage(currentUserRole);
+
   }
 }
 
@@ -254,7 +261,8 @@ async function handleReceiveButtonClick(event) {
           }
       }
 
-      await initRequestsPage('user');
+      await initRequestsPage(currentUserRole);
+
   }
 }
 
@@ -287,7 +295,8 @@ async function handleRevertButtonClick(event) {
           request.status = previousStatus;
           request.timestamp = new Date().toISOString(); // Обновляем timestamp
           await updateRequestStatusOnServer(requestId, previousStatus, request.timestamp);
-          await initRequestsPage('user');
+          await initRequestsPage(currentUserRole);
+
       }
   }
 }

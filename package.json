@@ -1,26 +1,44 @@
 {
   "name": "electro",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Elpa&Kvarts",
+  "author": "Snamik",
+  "main": "main.js",
   "scripts": {
-    "start": "electron ./main.js",
+    "start": "electron-forge start",
     "start-server": "node server/server.js",
     "start-dev": "concurrently \"npm run start\" \"npm run start-server\"",
-    "electron-reload": "electron ./main.js"
+    "electron-reload": "electron ./main.js",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "clean": "rimraf out",
+    "make-client": "npm run make -- --config config-client.forge.config.js",
+    "make-server-client": "npm run make -- --config config-server-client.forge.config.js",
+    "prebuild": "npm run clean && npm install"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^30.0.3",
+    "dotenv": "^16.4.5",
+    "electron-squirrel-startup": "^1.0.1",
     "helmet": "^7.1.0",
+    "rcedit": "^4.0.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
     "dotenv-webpack": "^8.1.0",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron": "^30.0.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "rimraf": "^6.0.1"
   }
 }

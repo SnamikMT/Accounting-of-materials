@@ -8,7 +8,7 @@ body {
 }
 
 .container {
-  padding: 20px;
+  padding: 40px;
 }
 
 /* Общие стили для кнопок */
@@ -21,6 +21,7 @@ button, .primary-button, .menu-button {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
 }
 
 button:hover, .primary-button:hover, .menu-button:hover {
@@ -181,7 +182,7 @@ header {
 
 /* Ввод данных */
 .input-field {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   margin: 15px 0;
   border: 1px solid #ccc;
@@ -214,7 +215,6 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ecf0f1;
   padding: 10px 15px;
   border-radius: 5px;
 }
@@ -267,4 +267,20 @@ header {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #000; /* Цвет крестика */
+}
+
+.modal-content {
+  position: relative;
+  padding: 20px;
+  /* Другие стили для модального окна */
 }

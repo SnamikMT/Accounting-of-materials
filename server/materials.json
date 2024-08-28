@@ -1,13 +1,10 @@
 {
-  "tokarny": {
-    "Materal": {
-      "Сталь": 200
+  "blackMetall": {
+    "Tesr": {
+      "r312": 124
     }
   },
-  "frezerny": {},
-  "slesarny": {},
-  "sverlilny": {},
-  "masla": {},
-  "sozhi": {},
-  "hozInst": {}
+  "nonferrousMetals": {},
+  "stainless": {},
+  "other": {}
 }

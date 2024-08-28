@@ -6,8 +6,25 @@
   "scripts": {
     "dev": "nodemon server.js"
   },
+  "bin": "server.js",
   "author": "Snamik",
   "license": "ISC",
+  "pkg": {
+  "assets": [
+    "public/**/*",
+    "config.json",
+    "users.json",
+    "requests.json",
+    "tools.json",
+    "materials.json"
+  ],
+  "targets": [
+    "node14-linux-x64",
+    "node14-win-x64",
+    "node14-macos-x64"
+  ],
+  "output": "dist/server"
+},
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
